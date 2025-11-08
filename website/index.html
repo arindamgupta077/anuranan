@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anuranan Recitation Training Institute | Bengali Cultural Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <div class="logo-icon">অ</div>
+                    <div class="logo-text">
+                        <h1>অনুরণন</h1>
+                        <p>Anuranan</p>
+                    </div>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#about" class="nav-link">About Us</a>
+                    <a href="#courses" class="nav-link">Courses</a>
+                    <a href="#gallery" class="nav-link">Gallery</a>
+                    <a href="#events" class="nav-link">Events</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="#contact" class="btn-join">Join Now</a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-pattern"></div>
+        <div class="container">
+            <div class="hero-content fade-in">
+                <div class="hero-badge">🎭 Since 2015</div>
+                <h1 class="hero-title">Welcome to <span class="bengali-text">অনুরণন</span></h1>
+                <h2 class="hero-subtitle">Anuranan Recitation Training Institute</h2>
+                <p class="hero-description">
+                    Experience the beauty of Bengali literature and cultural arts. 
+                    Join us in celebrating the rich heritage of recitation, anchoring, and performing arts.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#courses" class="btn btn-primary">Explore Courses</a>
+                    <a href="#contact" class="btn btn-secondary">Join Now</a>
+                </div>
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <i class="fas fa-book-reader"></i>
+                        <span>Bengali Recitation</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-microphone"></i>
+                        <span>Anchoring Classes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-theater-masks"></i>
+                        <span>Acting Workshops</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Discover Our Journey</span>
+                <h2 class="section-title">About <span class="highlight">Anuranan</span></h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="about-content">
+                <div class="about-image fade-in">
+                    <div class="image-wrapper">
+                        <img src="public/main.jpg" alt="Cultural Learning">
+                        <div class="image-pattern"></div>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <h3>250+</h3>
+                            <p>Students Trained</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>50+</h3>
+                            <p>Cultural Events</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-text fade-in">
+                    <p class="about-intro">
+                        Nestled in the heart of Kolkata, <strong>Anuranan Recitation Training Institute</strong>
+                        is a celebration of Bengali culture, literature, and performing arts.
+                    </p>
+                    <p>
+                        We are dedicated to preserving and promoting the rich heritage of Bengali recitation,
+                        while also nurturing talents in English and Hindi poetry recitation. Our institute
+                        serves as a cultural hub where students learn not just the art of recitation, but
+                        also develop confidence through anchoring and acting classes.
+                    </p>
+                    <div class="mission-box">
+                        <h3><i class="fas fa-heart"></i> Our Mission</h3>
+                        <p>
+                            To inspire and empower students to express themselves through the timeless art
+                            of recitation, anchoring, and acting, while keeping the essence of Bengali
+                            literature and culture alive for generations to come.
+                        </p>
+                    </div>
+                    <div class="values-list">
+                        <div class="value-item">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h4>Cultural Excellence</h4>
+                                <p>Preserving Bengali literary traditions</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h4>Inclusive Learning</h4>
+                                <p>Welcoming students of all ages and backgrounds</p>
+                            </div>
+                        </div>
+                        <div class="value-item">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <h4>Professional Training</h4>
+                                <p>Expert guidance from experienced mentors</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bengali Cultural Icons Section -->
+    <section class="cultural-icons-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Inspired By Legends</span>
+                <h2 class="section-title">Bengali <span class="highlight">Cultural Heritage</span></h2>
+                <div class="title-underline"></div>
+                <p class="section-description">
+                    Drawing inspiration from the timeless legacy of Bengal's greatest literary minds
+                </p>
+            </div>
+            <div class="icons-grid">
+                <div class="icon-card fade-in">
+                    <div class="icon-content">
+                        <div class="icon-header">
+                            <i class="fas fa-feather-alt icon-symbol"></i>
+                        </div>
+                        <h3>রবীন্দ্রনাথ ঠাকুর</h3>
+                        <h4>Rabindranath Tagore</h4>
+                        <p class="icon-years">1861-1941</p>
+                        <p class="icon-description">
+                            Nobel laureate, poet, composer, and philosopher. His works celebrate 
+                            humanity, nature, and spirituality. We teach his timeless poems and 
+                            songs that continue to inspire generations.
+                        </p>
+                        <div class="icon-quote">
+                            <i class="fas fa-quote-left"></i>
+                            <p>"যেখানে দেখিবে ছাই, উড়াইয়া দেখো তাই, পাইলেও পাইতে পারো অমূল্য রতন"</p>
+                            <span>— Rabindranath Tagore</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="icon-card fade-in">
+                    <div class="icon-content">
+                        <div class="icon-header">
+                            <i class="fas fa-fire icon-symbol"></i>
+                        </div>
+                        <h3>কাজী নজরুল ইসলাম</h3>
+                        <h4>Kazi Nazrul Islam</h4>
+                        <p class="icon-years">1899-1976</p>
+                        <p class="icon-description">
+                            The Rebel Poet, musician, and revolutionary. Known for his fiery poems 
+                            on equality, freedom, and love. His powerful verses ignite passion and 
+                            courage in every reciter.
+                        </p>
+                        <div class="icon-quote">
+                            <i class="fas fa-quote-left"></i>
+                            <p>"বল বীর, বল উন্নত মম শির!"</p>
+                            <span>— Kazi Nazrul Islam</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Cultural Elements -->
+            <div class="cultural-elements fade-in">
+                <div class="element-card">
+                    <div class="element-icon">🎭</div>
+                    <h4>Bengali Theatre</h4>
+                    <p>Rich tradition of drama and performance arts</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-icon">📖</div>
+                    <h4>Literary Heritage</h4>
+                    <p>Centuries of poetry, prose, and storytelling</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-icon">🎵</div>
+                    <h4>Rabindra Sangeet</h4>
+                    <p>Musical legacy of Tagore's compositions</p>
+                </div>
+                <div class="element-card">
+                    <div class="element-icon">🎨</div>
+                    <h4>Bengali Art</h4>
+                    <p>Visual arts inspired by cultural motifs</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Courses Section -->
+    <section id="courses" class="courses-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">What We Offer</span>
+                <h2 class="section-title">Our <span class="highlight">Courses</span></h2>
+                <div class="title-underline"></div>
+                <p class="section-description">
+                    Discover our comprehensive training programs designed to nurture your artistic talents
+                </p>
+            </div>
+            <div class="courses-grid">
+                <div class="course-card fade-in">
+                    <div class="course-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>Bengali Recitation</h3>
+                        <span class="course-badge">Popular</span>
+                    </div>
+                    <p class="course-description">
+                        Immerse yourself in the beauty of Bengali poetry. Learn to recite works of 
+                        Rabindranath Tagore, Kazi Nazrul Islam, Sukumar Ray, and other legendary poets 
+                        with proper pronunciation, emotion, and expression.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> Classical & Modern Poetry</li>
+                        <li><i class="fas fa-check"></i> Voice Modulation Techniques</li>
+                        <li><i class="fas fa-check"></i> Stage Presence Training</li>
+                        <li><i class="fas fa-check"></i> Competition Preparation</li>
+                    </ul>
+                    <a href="#contact" class="course-btn">Enroll Now</a>
+                </div>
+
+                <div class="course-card fade-in">
+                    <div class="course-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>English Recitation</h3>
+                    </div>
+                    <p class="course-description">
+                        Master the art of English poetry recitation with confidence. From Shakespeare 
+                        to contemporary poets, develop your linguistic skills and stage confidence 
+                        through expert guidance.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> British & American Poetry</li>
+                        <li><i class="fas fa-check"></i> Accent & Diction Training</li>
+                        <li><i class="fas fa-check"></i> Performance Skills</li>
+                        <li><i class="fas fa-check"></i> Public Speaking Basics</li>
+                    </ul>
+                    <a href="#contact" class="course-btn">Enroll Now</a>
+                </div>
+
+                <div class="course-card fade-in">
+                    <div class="course-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>Hindi Recitation</h3>
+                    </div>
+                    <p class="course-description">
+                        Explore the richness of Hindi literature through recitation. Learn to present 
+                        works of renowned Hindi poets with authenticity, emotion, and cultural understanding.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> Classical Hindi Poetry</li>
+                        <li><i class="fas fa-check"></i> Expression Development</li>
+                        <li><i class="fas fa-check"></i> Cultural Context Learning</li>
+                        <li><i class="fas fa-check"></i> Performance Practice</li>
+                    </ul>
+                    <a href="#contact" class="course-btn">Enroll Now</a>
+                </div>
+
+                <div class="course-card fade-in">
+                    <div class="course-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>Anchoring Classes</h3>
+                        <span class="course-badge new">New</span>
+                    </div>
+                    <p class="course-description">
+                        Develop the skills to host events with confidence and charisma. Learn script 
+                        writing, stage presence, audience engagement, and professional anchoring 
+                        techniques for various occasions.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> Event Hosting Skills</li>
+                        <li><i class="fas fa-check"></i> Script Writing & Delivery</li>
+                        <li><i class="fas fa-check"></i> Confidence Building</li>
+                        <li><i class="fas fa-check"></i> Live Event Practice</li>
+                    </ul>
+                    <a href="#contact" class="course-btn">Enroll Now</a>
+                </div>
+
+                <div class="course-card fade-in">
+                    <div class="course-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>Acting Workshops</h3>
+                    </div>
+                    <p class="course-description">
+                        Unleash your dramatic potential through comprehensive acting training. Learn 
+                        character development, improvisation, dialogue delivery, and stage/camera 
+                        performance techniques.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> Character Building</li>
+                        <li><i class="fas fa-check"></i> Improvisation Training</li>
+                        <li><i class="fas fa-check"></i> Dialogue Delivery</li>
+                        <li><i class="fas fa-check"></i> Theatre Performance</li>
+                    </ul>
+                    <a href="#contact" class="course-btn">Enroll Now</a>
+                </div>
+
+                <div class="course-card featured-card fade-in">
+                    <div class="featured-badge">
+                        <i class="fas fa-crown"></i> Special Offer
+                    </div>
+                    <div class="course-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="course-header">
+                        <h3>Combo Package</h3>
+                        <span class="course-badge">Save 30%</span>
+                    </div>
+                    <p class="course-description">
+                        Get comprehensive training across multiple disciplines. Our combo package offers 
+                        excellent value for students who want to explore various aspects of performing arts.
+                    </p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-check"></i> Any 3 Courses Combined</li>
+                        <li><i class="fas fa-check"></i> Personalized Attention</li>
+                        <li><i class="fas fa-check"></i> Flexible Schedule</li>
+                        <li><i class="fas fa-check"></i> Priority Event Participation</li>
+                    </ul>
+                    <a href="#contact" class="course-btn featured-btn">Get Special Offer</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Moments Captured</span>
+                <h2 class="section-title">Our <span class="highlight">Gallery</span></h2>
+                <div class="title-underline"></div>
+                <p class="section-description">
+                    Glimpses of our vibrant classes, performances, and cultural celebrations
+                    <br><small style="color: var(--primary-blue); font-size: 14px; margin-top: 5px; display: inline-block;">
+                        <i class="fas fa-hand-pointer"></i> Click on any image to view in fullscreen
+                    </small>
+                </p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item fade-in">
+                    <img src="public/main.jpg" alt="Student Performance">
+                    <div class="gallery-overlay">
+                        <h3>Student Performances</h3>
+                        <p>Annual Cultural Program 2024</p>
+                    </div>
+                </div>
+                <div class="gallery-item fade-in">
+                    <img src="public/Rabindranath.jpg" alt="Recitation Class">
+                    <div class="gallery-overlay">
+                        <h3>Recitation Classes</h3>
+                        <p>Learning Bengali Poetry</p>
+                    </div>
+                </div>
+                <div class="gallery-item fade-in">
+                    <img src="public/najrul.jpg" alt="Workshop">
+                    <div class="gallery-overlay">
+                        <h3>Acting Workshop</h3>
+                        <p>Weekend Drama Session</p>
+                    </div>
+                </div>
+                <div class="gallery-item fade-in">
+                    <img src="public/hero.jpg" alt="Cultural Event">
+                    <div class="gallery-overlay">
+                        <h3>Cultural Events</h3>
+                        <p>Rabindra Jayanti Celebration</p>
+                    </div>
+                </div>
+                <div class="gallery-item fade-in">
+                    <img src="public/main.jpg" alt="Group Class">
+                    <div class="gallery-overlay">
+                        <h3>Group Sessions</h3>
+                        <p>Interactive Learning Environment</p>
+                    </div>
+                </div>
+                <div class="gallery-item fade-in">
+                    <img src="public/Rabindranath.jpg" alt="Award Ceremony">
+                    <div class="gallery-overlay">
+                        <h3>Award Ceremonies</h3>
+                        <p>Celebrating Student Achievements</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Gallery Navigation -->
+            <button class="gallery-nav-btn gallery-prev" id="galleryPrev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="gallery-nav-btn gallery-next" id="galleryNext">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="gallery-pagination" id="galleryPagination"></div>
+            <p class="gallery-note">
+                <i class="fas fa-info-circle"></i> 
+                Images are placeholders. You can replace them with your own photos of classes, performances, and events.
+            </p>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="events-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">What's Happening</span>
+                <h2 class="section-title">Events & <span class="highlight">Programs</span></h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="events-grid">
+                <div class="event-card fade-in">
+                    <div class="event-date">
+                        <span class="day">15</span>
+                        <span class="month">DEC</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Cultural Program</span>
+                        <h3>Annual Recitation Competition</h3>
+                        <p>
+                            Join us for our prestigious annual recitation competition featuring 
+                            performances in Bengali, English, and Hindi poetry. Open to all students.
+                        </p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 5:00 PM - 8:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Main Auditorium</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card fade-in">
+                    <div class="event-date">
+                        <span class="day">22</span>
+                        <span class="month">DEC</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Workshop</span>
+                        <h3>Special Acting Workshop</h3>
+                        <p>
+                            A two-day intensive workshop on theatre acting and improvisation, 
+                            conducted by renowned theatre artist from Kolkata.
+                        </p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 10:00 AM - 4:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Drama Studio</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card fade-in">
+                    <div class="event-date">
+                        <span class="day">08</span>
+                        <span class="month">JAN</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Celebration</span>
+                        <h3>Rabindra Sangeet Evening</h3>
+                        <p>
+                            An evening dedicated to celebrating the works of Rabindranath Tagore 
+                            through recitations, songs, and cultural performances.
+                        </p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 6:00 PM - 9:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Open Air Theatre</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card fade-in">
+                    <div class="event-date">
+                        <span class="day">20</span>
+                        <span class="month">JAN</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Performance</span>
+                        <h3>Students' Showcase</h3>
+                        <p>
+                            A platform for our students to showcase their talent in recitation, 
+                            anchoring, and acting. Parents and guests are warmly invited.
+                        </p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 4:00 PM - 7:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Main Hall</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bengali Poetry Showcase -->
+    <section class="poetry-section">
+        <div class="container">
+            <div class="poetry-content fade-in">
+                <div class="poetry-icon">📖</div>
+                <h2 class="poetry-title bengali-text">শিল্প ও সাহিত্যের আলোকে</h2>
+                <p class="poetry-subtitle">In the Light of Art and Literature</p>
+                <blockquote class="poetry-quote">
+                    <p class="bengali-verse">
+                        "যেখানে থাকে সত্য, পীড়ন-বারিধি-তীরে,<br>
+                        সেখানে যায় না কবি, গীতি-নৃত্যধ্বনি-সহিতে।"
+                    </p>
+                    <footer>
+                        <cite>— রবীন্দ্রনাথ ঠাকুর (Rabindranath Tagore)</cite>
+                    </footer>
+                </blockquote>
+                <p class="poetry-message">
+                    At Anuranan, we believe that recitation is not just about words—it's about 
+                    breathing life into the eternal verses of our cultural heritage. Every poem 
+                    carries the soul of Bengal, and every student becomes a guardian of this legacy.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Student Voices</span>
+                <h2 class="section-title">What Our <span class="highlight">Students Say</span></h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">
+                        "Anuranan has transformed my confidence. I never thought I could perform 
+                        on stage, but the supportive environment and expert guidance helped me 
+                        discover my passion for Bengali recitation."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>Priya Chatterjee</h4>
+                            <p>Student, Bengali Recitation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card fade-in">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">
+                        "The acting workshops here are incredible. I've learned so much about 
+                        character development and stage presence. The teachers are passionate 
+                        and truly care about each student's growth."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>Rahul Sengupta</h4>
+                            <p>Student, Acting & Anchoring</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card fade-in">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">
+                        "As a parent, I'm amazed by my daughter's progress. She's not only 
+                        learned recitation but also developed public speaking skills and 
+                        confidence that will benefit her throughout life."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>Mrs. Sunita Banerjee</h4>
+                            <p>Parent</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Get In Touch</span>
+                <h2 class="section-title">Contact <span class="highlight">Us</span></h2>
+                <div class="title-underline"></div>
+                <p class="section-description">
+                    Ready to begin your cultural journey? We'd love to hear from you!
+                </p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info fade-in">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>Visit Us</h3>
+                            <p>
+                                Anuranan Recitation Training Institute<br>
+                                [Your Address Here]<br>
+                                Kolkata, West Bengal, India
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>Call Us</h3>
+                            <p>
+                                +91 [Your Phone Number]<br>
+                                +91 [Alternate Number]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>Email Us</h3>
+                            <p>
+                                info@anuranan.in<br>
+                                contact@anuranan.in
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>Class Timings</h3>
+                            <p>
+                                Monday - Saturday: 4:00 PM - 8:00 PM<br>
+                                Sunday: 10:00 AM - 2:00 PM
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <h3>Follow Us</h3>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper fade-in">
+                    <form class="contact-form" id="contactForm">
+                        <h3>Send us a Message</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="course">Interested Course</label>
+                            <select id="course" name="course">
+                                <option value="">Select a course</option>
+                                <option value="bengali">Bengali Recitation</option>
+                                <option value="english">English Recitation</option>
+                                <option value="hindi">Hindi Recitation</option>
+                                <option value="anchoring">Anchoring Classes</option>
+                                <option value="acting">Acting Workshops</option>
+                                <option value="combo">Combo Package</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" name="message" rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <div class="map-section fade-in">
+                <h3>Find Us on Map</h3>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235850.80315098844!2d88.18249717905044!3d22.535564937441123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f882db4908f667%3A0x43e330e68f6c2cbc!2sKolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1699876543210!5m2!1sen!2sin" 
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <p class="map-note">
+                        <i class="fas fa-info-circle"></i> 
+                        Please update the map embed code with your exact institute location.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="bengali-pattern-decoration"></div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <div class="logo-icon">অ</div>
+                        <div>
+                            <h3>অনুরণন</h3>
+                            <p>Anuranan</p>
+                        </div>
+                    </div>
+                    <p class="footer-desc">
+                        Celebrating Bengali culture through the art of recitation, 
+                        anchoring, and performance. Join us in keeping the literary 
+                        heritage alive.
+                    </p>
+                    <div class="cultural-tagline">
+                        <p class="bengali-text">সাহিত্য ও শিল্পের সেবায় নিয়োজিত</p>
+                        <p>Dedicated to Literature and Arts</p>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#courses">Courses</a></li>
+                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Our Courses</h4>
+                    <ul class="footer-links">
+                        <li><a href="#courses">Bengali Recitation</a></li>
+                        <li><a href="#courses">English Recitation</a></li>
+                        <li><a href="#courses">Hindi Recitation</a></li>
+                        <li><a href="#courses">Anchoring Classes</a></li>
+                        <li><a href="#courses">Acting Workshops</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Connect With Us</h4>
+                    <div class="footer-social">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                    <p class="footer-contact">
+                        <i class="fas fa-phone"></i> +91 [Your Number]<br>
+                        <i class="fas fa-envelope"></i> info@anuranan.in
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Anuranan Recitation Training Institute. All rights reserved.</p>
+                <p>Designed with <i class="fas fa-heart"></i> for Bengali Culture</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTop" class="scroll-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+    <script src="supabase-loader.js?v=3.0"></script>
+</body>
+</html>

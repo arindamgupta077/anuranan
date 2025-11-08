@@ -1,0 +1,20 @@
+{
+  "name": "anuranan-website",
+  "version": "1.0.0",
+  "description": "Anuranan Recitation Training Institute - Main Website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l 3000"
+  },
+  "keywords": [
+    "anuranan",
+    "recitation",
+    "bengali",
+    "cultural"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

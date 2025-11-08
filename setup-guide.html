@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup Instructions - Anuranan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1B4B8F 0%, #0F2C54 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1B4B8F;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #5A6C7D;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .step {
+            background: #f9fafb;
+            border-left: 4px solid #FDB813;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .step h2 {
+            color: #1B4B8F;
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: #FDB813;
+            color: #1B4B8F;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step p {
+            color: #5A6C7D;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .step ul {
+            margin-left: 20px;
+            color: #5A6C7D;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: #fff8e7;
+            border-left: 4px solid #ff9933;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning strong {
+            color: #e86a33;
+        }
+
+        .success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #1B4B8F;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 10px 10px 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0F2C54;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 75, 143, 0.3);
+        }
+
+        .btn-secondary {
+            background: #FDB813;
+            color: #1B4B8F;
+        }
+
+        .btn-secondary:hover {
+            background: #FFD700;
+        }
+
+        .checklist {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .checklist h3 {
+            color: #1B4B8F;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #1B4B8F;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .links {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .links {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Anuranan Admin Panel Setup</h1>
+        <p class="subtitle">Follow these steps to set up your admin panel with Supabase</p>
+
+        <div class="step">
+            <h2><span class="step-number">1</span> Login to Supabase Dashboard</h2>
+            <p>Navigate to your Supabase project dashboard:</p>
+            <div class="code-block">
+https://supabase.com/dashboard/project/ghcsoyispspvjvbkcfoj
+            </div>
+        </div>
+
+        <div class="step">
+            <h2><span class="step-number">2</span> Create Storage Buckets</h2>
+            <p>Create two public storage buckets:</p>
+            <ul>
+                <li>Go to <strong>Storage</strong> in the left sidebar</li>
+                <li>Click <strong>"New bucket"</strong></li>
+                <li>Create first bucket:
+                    <ul>
+                        <li>Name: <code>gallery-photos</code></li>
+                        <li>Toggle <strong>"Public bucket"</strong> to ON</li>
+                        <li>Click "Create bucket"</li>
+                    </ul>
+                </li>
+                <li>Create second bucket:
+                    <ul>
+                        <li>Name: <code>event-images</code></li>
+                        <li>Toggle <strong>"Public bucket"</strong> to ON</li>
+                        <li>Click "Create bucket"</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h2><span class="step-number">3</span> Configure Bucket Policies</h2>
+            <p>Set up storage policies to allow read/write access:</p>
+            <ul>
+                <li>Go to <strong>Storage</strong> → Click on a bucket → <strong>Policies</strong> tab</li>
+                <li>Click <strong>"New Policy"</strong></li>
+                <li>Select <strong>"For full customization"</strong></li>
+                <li>Create these policies for EACH bucket:</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Policy 1: Public Read Access</strong></p>
+            <div class="code-block">
+-- Policy name: Public Access
+-- Allowed operation: SELECT
+-- Policy definition:
+true
+            </div>
+            <p style="margin-top: 15px;"><strong>Policy 2: Allow All Operations</strong></p>
+            <div class="code-block">
+-- Policy name: Allow All Operations
+-- Allowed operations: INSERT, UPDATE, DELETE
+-- Policy definition:
+true
+            </div>
+            <p style="margin-top: 15px;"><em>Or use the SQL script in <code>supabase-setup.sql</code></em></p>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Important Security Note:</strong><br>
+            The current setup uses a simple password for demo purposes. For production:
+            <ul style="margin-top: 10px;">
+                <li>Change the admin password in <code>admin.js</code> (line 18)</li>
+                <li>Consider implementing Supabase Authentication</li>
+                <li>Use Row Level Security (RLS) policies</li>
+                <li>Never commit sensitive credentials to version control</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h2><span class="step-number">4</span> Access Admin Panel</h2>
+            <p>Once setup is complete:</p>
+            <ul>
+                <li>Open <code>admin.html</code> in your browser</li>
+                <li>Login with password: <strong>anuranan2024</strong></li>
+                <li>Start managing your gallery and events!</li>
+            </ul>
+        </div>
+
+        <div class="checklist">
+            <h3>✓ Setup Checklist</h3>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>Created <code>gallery-photos</code> bucket (Public)</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>Created <code>event-images</code> bucket (Public)</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>Configured storage policies for both buckets</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>Tested admin panel access</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>Changed default admin password (optional)</span>
+            </div>
+        </div>
+
+        <div class="success">
+            <strong>🎉 Features You Get:</strong>
+            <ul style="margin-top: 10px;">
+                <li>✅ Add, update, and delete gallery photos</li>
+                <li>✅ Add, update, and delete events</li>
+                <li>✅ Real-time updates on main website</li>
+                <li>✅ Automatic image optimization</li>
+                <li>✅ Secure file storage with Supabase</li>
+            </ul>
+        </div>
+
+        <div class="links">
+            <a href="admin.html" class="btn">Open Admin Panel</a>
+            <a href="index.html" class="btn btn-secondary">View Main Website</a>
+            <a href="https://supabase.com/dashboard/project/ghcsoyispspvjvbkcfoj" class="btn" target="_blank">Supabase Dashboard</a>
+        </div>
+
+        <p style="margin-top: 40px; color: #5A6C7D; font-size: 14px; text-align: center;">
+            Need help? Check <code>ADMIN_SETUP.md</code> for detailed documentation
+        </p>
+    </div>
+
+    <script>
+        // Interactive checklist
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.style.background = this.style.background ? '' : '#1B4B8F';
+                this.innerHTML = this.innerHTML ? '' : '✓';
+                this.style.color = 'white';
+            });
+        });
+    </script>
+</body>
+</html>

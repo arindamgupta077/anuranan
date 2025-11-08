@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #00ff00;
+        }
+        .test { margin: 10px 0; padding: 10px; background: #2d2d2d; border-radius: 5px; }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Supabase Direct Test</h1>
+    <button onclick="runTest()">RUN TEST</button>
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://ghcsoyispspvjvbkcfoj.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoY3NveWlzcHNwdmp2YmtjZm9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MzA4MTksImV4cCI6MjA3NzQwNjgxOX0.h4hHxp_U89kiP-JlubG9XaW-UUmP2lgdRTGcmlVhVxs';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function log(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'test ' + (isError ? 'error' : 'success');
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+
+        async function runTest() {
+            document.getElementById('results').innerHTML = '';
+            log('🚀 Starting tests...');
+
+            // Test 1: Check if Supabase client is initialized
+            log('Test 1: Supabase client initialized = ' + (supabase ? '✅ YES' : '❌ NO'));
+
+            // Test 2: Try to list files from gallery-photos
+            log('Test 2: Listing files from gallery-photos...');
+            try {
+                const { data, error } = await supabase.storage
+                    .from('gallery-photos')
+                    .list('', { limit: 10 });
+                
+                if (error) {
+                    log('❌ Error: ' + error.message, true);
+                    log('Error details: ' + JSON.stringify(error, null, 2), true);
+                } else {
+                    log('✅ SUCCESS! Files found: ' + (data ? data.length : 0));
+                    if (data && data.length > 0) {
+                        log('Files: ' + JSON.stringify(data.map(f => f.name)));
+                    }
+                }
+            } catch (err) {
+                log('❌ Exception: ' + err.message, true);
+                log('Stack: ' + err.stack, true);
+            }
+
+            // Test 3: Try to get public URL
+            log('Test 3: Getting public URL...');
+            try {
+                const { data } = supabase.storage
+                    .from('gallery-photos')
+                    .getPublicUrl('test.jpg');
+                
+                log('✅ Public URL generated: ' + data.publicUrl);
+            } catch (err) {
+                log('❌ Exception: ' + err.message, true);
+            }
+
+            // Test 4: Check bucket directly via fetch
+            log('Test 4: Direct API call to list endpoint...');
+            try {
+                const url = `${SUPABASE_URL}/storage/v1/object/list/gallery-photos`;
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+                
+                log('Response status: ' + response.status + ' ' + response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Direct API SUCCESS! Response: ' + JSON.stringify(data));
+                } else {
+                    const text = await response.text();
+                    log('❌ Direct API FAILED! Response: ' + text, true);
+                }
+            } catch (err) {
+                log('❌ Direct API Exception: ' + err.message, true);
+            }
+
+            log('🏁 Tests complete!');
+        }
+    </script>
+</body>
+</html>
