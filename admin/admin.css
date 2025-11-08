@@ -25,6 +25,25 @@ body {
     font-family: var(--font-english);
     background: #F8F9FA;
     color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Improve touch targets for mobile */
+button,
+input,
+select,
+textarea,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
 }
 
 /* Admin Navbar */
@@ -849,38 +868,626 @@ body {
 }
 
 /* Responsive Design */
+/* ==================== 
+   Responsive Design
+   ==================== */
+
+/* Tablet and below (1024px) */
+@media (max-width: 1024px) {
+    .admin-content {
+        padding: 2rem;
+    }
+    
+    .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+/* Mobile (768px and below) */
 @media (max-width: 768px) {
+    /* Navigation */
+    .admin-navbar {
+        padding: 0.8rem 1rem;
+        height: auto;
+    }
+    
+    .admin-nav-content {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+    
+    .admin-logo {
+        gap: 10px;
+    }
+    
+    .admin-logo .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .admin-logo .logo-text h1 {
+        font-size: 18px;
+    }
+    
+    .admin-logo .logo-text p {
+        font-size: 10px;
+    }
+    
+    .admin-actions {
+        flex: 1;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+    
+    .btn-view-site,
+    .btn-logout {
+        padding: 0.5rem 0.8rem;
+        font-size: 13px;
+    }
+    
+    .btn-view-site span,
+    .btn-logout span {
+        display: none;
+    }
+    
+    .btn-view-site i,
+    .btn-logout i {
+        margin: 0;
+    }
+    
+    /* Login Section */
+    .login-section {
+        padding: 1.5rem;
+    }
+    
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .login-header .logo-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    .login-header h2 {
+        font-size: 24px;
+    }
+    
+    /* Dashboard Layout */
+    .admin-dashboard {
+        flex-direction: column;
+        margin-top: 70px;
+    }
+    
     .admin-sidebar {
         width: 100%;
         position: relative;
         top: 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
-
+    
+    .admin-menu {
+        padding: 1rem 0;
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .menu-item {
+        padding: 0.8rem 1.5rem;
+        flex-shrink: 0;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        min-height: auto;
+    }
+    
+    .menu-item.active {
+        border-left: none;
+        border-bottom-color: var(--primary-blue);
+    }
+    
+    .menu-item i {
+        font-size: 18px;
+    }
+    
+    .menu-item span {
+        font-size: 14px;
+    }
+    
     .admin-content {
         margin-left: 0;
-        padding: 1rem;
+        padding: 1.5rem 1rem;
     }
-
-    .admin-dashboard {
-        flex-direction: column;
-    }
-
-    .items-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
+    
+    /* Section Header */
     .section-header-admin {
         flex-direction: column;
-        gap: 1rem;
         align-items: flex-start;
-    }
-
-    .admin-nav-content {
-        flex-direction: column;
         gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+    
+    .section-header-admin h2 {
+        font-size: 22px;
+    }
+    
+    .section-header-admin h2 i {
+        font-size: 20px;
+    }
+    
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+        padding: 0.7rem 1.2rem;
+        font-size: 14px;
+    }
+    
+    /* Items Grid */
+    .items-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+    
+    .item-card {
+        border-radius: 12px;
+    }
+    
+    .item-image {
+        height: 180px;
+    }
+    
+    .item-content {
+        padding: 1.2rem;
+    }
+    
+    .item-title {
+        font-size: 17px;
+    }
+    
+    .item-description {
+        font-size: 13px;
+    }
+    
+    .item-actions {
+        gap: 0.6rem;
+        padding-top: 0.8rem;
+    }
+    
+    .btn-edit,
+    .btn-delete-item {
+        font-size: 13px;
+        padding: 0.5rem;
+    }
+    
+    /* Modal */
+    .modal {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        max-width: 100%;
+        border-radius: 15px;
+    }
+    
+    .modal-header {
+        padding: 1.5rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 20px;
+    }
+    
+    .modal-close {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-form {
+        padding: 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.7rem;
+        font-size: 14px;
+    }
+    
+    .file-upload-area {
+        padding: 1.5rem;
+    }
+    
+    .file-upload-text i {
+        font-size: 40px;
+    }
+    
+    .file-upload-text p {
+        font-size: 15px;
+    }
+    
+    .image-preview img {
+        max-height: 200px;
+    }
+    
+    .modal-actions {
+        padding: 1.2rem 1.5rem;
+        flex-direction: column;
+    }
+    
+    .btn-cancel,
+    .btn-save,
+    .btn-delete {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 14px;
+    }
+    
+    /* Toast */
+    .toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        padding: 0.9rem 1.2rem;
+        font-size: 14px;
+    }
+    
+    .toast i {
+        font-size: 18px;
+    }
+    
+    /* Event specific */
+    .event-date-badge {
+        font-size: 14px;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .event-category-badge {
+        font-size: 11px;
+        padding: 0.25rem 0.6rem;
+    }
+    
+    .event-meta-item {
+        font-size: 12px;
+    }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+    /* Navigation */
+    .admin-navbar {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .admin-logo .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .admin-logo .logo-text h1 {
+        font-size: 16px;
+    }
+    
+    .admin-logo .logo-text p {
+        font-size: 9px;
+    }
+    
+    .btn-view-site,
+    .btn-logout {
+        padding: 0.4rem 0.6rem;
+        font-size: 12px;
+    }
+    
+    /* Login */
+    .login-section {
+        padding: 1rem;
+    }
+    
+    .login-card {
+        padding: 1.5rem 1rem;
+        border-radius: 15px;
+    }
+    
+    .login-header .logo-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 26px;
+    }
+    
+    .login-header h2 {
+        font-size: 22px;
+    }
+    
+    .login-header p {
+        font-size: 13px;
+    }
+    
+    .login-form input {
+        padding: 0.8rem;
+        font-size: 14px;
+    }
+    
+    .btn-login {
+        padding: 0.9rem;
+        font-size: 15px;
+    }
+    
+    /* Dashboard */
+    .admin-dashboard {
+        margin-top: 60px;
+    }
+    
+    .admin-menu {
+        padding: 0.8rem 0;
+    }
+    
+    .menu-item {
+        padding: 0.7rem 1.2rem;
+        font-size: 13px;
+    }
+    
+    .menu-item i {
+        font-size: 16px;
+        width: 22px;
+    }
+    
+    .menu-item span {
+        font-size: 13px;
+    }
+    
+    .admin-content {
+        padding: 1.2rem 0.8rem;
+    }
+    
+    .section-header-admin {
+        margin-bottom: 1.2rem;
+    }
+    
+    .section-header-admin h2 {
+        font-size: 20px;
+    }
+    
+    .section-header-admin h2 i {
+        font-size: 18px;
+    }
+    
+    .btn-add {
+        padding: 0.65rem 1rem;
+        font-size: 13px;
+    }
+    
+    /* Items */
+    .items-grid {
+        gap: 1rem;
+    }
+    
+    .item-image {
+        height: 160px;
+    }
+    
+    .item-content {
+        padding: 1rem;
+    }
+    
+    .item-title {
+        font-size: 16px;
+    }
+    
+    .item-description {
+        font-size: 13px;
+    }
+    
+    .btn-edit,
+    .btn-delete-item {
+        padding: 0.45rem;
+        font-size: 12px;
+    }
+    
+    /* Modal */
+    .modal {
+        padding: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 12px;
+    }
+    
+    .modal-header {
+        padding: 1.2rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 18px;
+    }
+    
+    .modal-close {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+    
+    .modal-body,
+    .modal-form {
+        padding: 1.2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        font-size: 12px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.65rem;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+    
+    .file-upload-area {
+        padding: 1.2rem;
+    }
+    
+    .file-upload-text i {
+        font-size: 36px;
+    }
+    
+    .file-upload-text p {
+        font-size: 14px;
+    }
+    
+    .file-upload-text small {
+        font-size: 12px;
+    }
+    
+    .image-preview img {
+        max-height: 180px;
+    }
+    
+    .modal-actions {
+        padding: 1rem 1.2rem;
+    }
+    
+    .btn-cancel,
+    .btn-save,
+    .btn-delete {
+        padding: 0.7rem;
+        font-size: 13px;
+    }
+    
+    /* Delete warning */
+    .delete-warning i {
+        font-size: 52px;
+    }
+    
+    .delete-warning p {
+        font-size: 14px;
+    }
+    
+    /* Loading */
+    .loading {
+        padding: 2rem 1rem;
+        font-size: 14px;
+    }
+    
+    .loading i {
+        font-size: 20px;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        padding: 3rem 1.5rem;
+    }
+    
+    .empty-state i {
+        font-size: 52px;
+    }
+    
+    .empty-state h3 {
+        font-size: 18px;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+    }
+}
+
+/* Extra Small Devices (360px and below) */
+@media (max-width: 360px) {
+    .admin-navbar {
+        padding: 0.5rem 0.6rem;
+    }
+    
+    .admin-logo .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    
+    .admin-logo .logo-text h1 {
+        font-size: 14px;
+    }
+    
+    .admin-logo .logo-text p {
+        display: none;
+    }
+    
+    .section-header-admin h2 {
+        font-size: 18px;
+    }
+    
+    .btn-add {
+        font-size: 12px;
+    }
+    
+    .item-title {
+        font-size: 15px;
+    }
+    
+    .modal-header h3 {
+        font-size: 16px;
+    }
+}
+
+/* Landscape Orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-section {
+        padding: 1rem;
+        min-height: auto;
+    }
+    
+    .login-card {
+        padding: 1.5rem;
+    }
+    
+    .login-header .logo-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .modal {
+        padding: 0.5rem;
+    }
+    
+    .modal-content {
+        margin: 0;
+    }
+}
+
+/* Reduce Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

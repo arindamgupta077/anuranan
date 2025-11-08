@@ -46,6 +46,8 @@
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Remove tap highlight on mobile */
 }
 
 body {
@@ -54,6 +56,8 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
@@ -68,14 +72,39 @@ img {
     display: block;
 }
 
+/* Ensure proper image rendering on mobile */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
 a {
     text-decoration: none;
     color: inherit;
     transition: var(--transition);
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
 }
 
 ul {
     list-style: none;
+}
+
+/* Improve touch targets for mobile */
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* ==================== 
@@ -1977,6 +2006,8 @@ section {
     
     .icons-grid {
         grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
     }
     
     .gallery-grid {
@@ -1990,11 +2021,32 @@ section {
     .bengali-verse {
         font-size: 22px;
     }
+    
+    .courses-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    
+    .about-stats {
+        justify-content: center;
+    }
 }
 
 @media (max-width: 768px) {
+    /* Adjust root variables for mobile */
+    :root {
+        --section-padding: 60px 0;
+        --container-padding: 0 15px;
+    }
+    
+    /* Container adjustments */
+    .container {
+        padding: 0 15px;
+    }
+    
+    /* Navigation improvements */
     .hamburger {
         display: flex;
+        z-index: 1001;
     }
     
     .nav-links {
@@ -2005,13 +2057,29 @@ section {
         height: calc(100vh - 80px);
         background: var(--white);
         flex-direction: column;
-        padding: 40px;
+        padding: 40px 20px;
         box-shadow: 0 5px 20px var(--shadow);
         transition: var(--transition);
+        overflow-y: auto;
+        align-items: stretch;
     }
     
     .nav-links.active {
         left: 0;
+    }
+    
+    .nav-link {
+        padding: 15px 0;
+        font-size: 16px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .btn-join {
+        margin-top: 20px;
+        text-align: center;
+        padding: 15px 25px;
+        width: 100%;
     }
     
     .hamburger.active span:nth-child(1) {
@@ -2026,40 +2094,217 @@ section {
         transform: rotate(-45deg) translate(8px, -8px);
     }
     
+    /* Logo adjustments */
+    .logo-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+    }
+    
+    .logo-text h1 {
+        font-size: 20px;
+    }
+    
+    .logo-text p {
+        font-size: 11px;
+    }
+    
+    /* Hero section mobile optimization */
+    .hero {
+        min-height: 90vh;
+        padding: 100px 0 60px;
+    }
+    
     .hero-title {
-        font-size: 36px;
+        font-size: 32px;
+        line-height: 1.3;
     }
     
     .bengali-text {
-        font-size: 42px;
+        font-size: 38px;
+        display: block;
+        margin: 10px 0;
     }
     
     .hero-subtitle {
-        font-size: 22px;
+        font-size: 20px;
+        line-height: 1.4;
+    }
+    
+    .hero-description {
+        font-size: 16px;
+        padding: 0 10px;
+    }
+    
+    .hero-badge {
+        font-size: 14px;
+        padding: 8px 20px;
     }
     
     .hero-buttons {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        gap: 15px;
+        padding: 0 20px;
     }
     
     .btn {
         width: 100%;
-        max-width: 300px;
         justify-content: center;
+        padding: 14px 30px;
+        font-size: 15px;
     }
     
+    .hero-features {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .feature-item {
+        font-size: 14px;
+    }
+    
+    .feature-item i {
+        font-size: 20px;
+    }
+    
+    /* Section headers */
     .section-title {
+        font-size: 30px;
+        line-height: 1.3;
+    }
+    
+    .section-subtitle {
+        font-size: 12px;
+    }
+    
+    .section-description {
+        font-size: 16px;
+        padding: 0 15px;
+    }
+    
+    /* About section */
+    .about-content {
+        gap: 30px;
+    }
+    
+    .image-wrapper img {
+        height: 350px;
+    }
+    
+    .about-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-card h3 {
         font-size: 32px;
     }
     
-    .courses-grid,
-    .events-grid {
-        grid-template-columns: 1fr;
+    .about-text {
+        font-size: 15px;
     }
     
+    .about-intro {
+        font-size: 17px;
+    }
+    
+    .mission-box {
+        padding: 20px;
+    }
+    
+    .values-list {
+        gap: 15px;
+    }
+    
+    .value-item i {
+        font-size: 20px;
+    }
+    
+    .value-item h4 {
+        font-size: 16px;
+    }
+    
+    /* Cultural icons section */
+    .icons-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .icon-content {
+        padding: 25px 20px;
+    }
+    
+    .icon-content h3 {
+        font-size: 26px;
+    }
+    
+    .icon-content h4 {
+        font-size: 20px;
+    }
+    
+    .icon-symbol {
+        font-size: 48px;
+    }
+    
+    .icon-quote p {
+        font-size: 16px;
+    }
+    
+    .cultural-elements {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .element-card {
+        padding: 20px 15px;
+    }
+    
+    .element-icon {
+        font-size: 36px;
+    }
+    
+    .element-card h4 {
+        font-size: 16px;
+    }
+    
+    .element-card p {
+        font-size: 13px;
+    }
+    
+    /* Courses section */
+    .courses-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .course-card {
+        padding: 25px 20px;
+    }
+    
+    .course-header h3 {
+        font-size: 20px;
+    }
+    
+    .course-description {
+        font-size: 14px;
+    }
+    
+    .course-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    /* Gallery section */
     .gallery-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
     .gallery-nav-btn {
@@ -2076,37 +2321,49 @@ section {
         right: 10px;
     }
     
-    .form-row {
+    .gallery-overlay h3 {
+        font-size: 18px;
+    }
+    
+    .gallery-overlay p {
+        font-size: 14px;
+    }
+    
+    /* Events section */
+    .events-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
     .event-card {
         flex-direction: column;
         text-align: center;
+        padding: 0;
     }
     
     .event-date {
         width: 100%;
+        padding: 20px;
+        border-radius: 15px 15px 0 0;
     }
     
-    .icon-content h3 {
-        font-size: 28px;
+    .event-content {
+        padding: 20px;
     }
     
-    .icon-content h4 {
+    .event-content h3 {
         font-size: 20px;
     }
     
-    .icon-symbol {
-        font-size: 48px;
+    .event-meta {
+        flex-direction: column;
+        gap: 8px;
     }
     
-    .cultural-elements {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
+    /* Poetry section */
     .poetry-title {
-        font-size: 32px;
+        font-size: 28px;
+        padding: 0 15px;
     }
     
     .poetry-subtitle {
@@ -2114,100 +2371,791 @@ section {
     }
     
     .bengali-verse {
-        font-size: 20px;
+        font-size: 18px;
         line-height: 1.8;
+        padding: 0 10px;
     }
     
     .poetry-quote {
-        padding: 25px;
-    }
-}
-
-@media (max-width: 480px) {
-    :root {
-        --section-padding: 50px 0;
+        padding: 20px 15px;
+        margin: 0 10px;
     }
     
-    .hero-title {
-        font-size: 28px;
+    .poetry-message {
+        font-size: 15px;
+        padding: 0 15px;
     }
     
-    .bengali-text {
-        font-size: 36px;
+    .poetry-icon {
+        font-size: 48px;
     }
     
-    .hero-subtitle {
-        font-size: 18px;
-    }
-    
-    .hero-features {
-        flex-direction: column;
+    /* Testimonials section */
+    .testimonials-grid {
+        grid-template-columns: 1fr;
         gap: 20px;
     }
     
-    .section-title {
-        font-size: 28px;
+    .testimonial-card {
+        padding: 25px 20px;
     }
     
-    .course-card,
-    .contact-form-wrapper {
-        padding: 25px;
+    .testimonial-text {
+        font-size: 15px;
     }
     
-    .scroll-top {
-        bottom: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-    }
-    
-    .icons-grid {
+    /* Contact section */
+    .contact-content {
         grid-template-columns: 1fr;
         gap: 30px;
     }
     
+    .contact-info {
+        order: 2;
+    }
+    
+    .contact-form-wrapper {
+        order: 1;
+        padding: 25px 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .info-card {
+        padding: 20px 15px;
+    }
+    
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+    
+    .info-text h3 {
+        font-size: 18px;
+    }
+    
+    .info-text p {
+        font-size: 14px;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+    
+    /* Footer */
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+    }
+    
+    .footer-logo {
+        justify-content: center;
+    }
+    
+    .footer-social {
+        justify-content: center;
+    }
+    
+    .footer-links {
+        text-align: center;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* Map section */
+    .map-container iframe {
+        height: 300px;
+    }
+    
+    /* Scroll indicator */
+    .scroll-indicator {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Root variables for small screens */
+    :root {
+        --section-padding: 40px 0;
+        --container-padding: 0 12px;
+    }
+    
+    /* Container */
+    .container {
+        padding: 0 12px;
+    }
+    
+    /* Navigation */
+    .nav-wrapper {
+        padding: 12px 0;
+    }
+    
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+    
+    .logo-text h1 {
+        font-size: 18px;
+    }
+    
+    .logo-text p {
+        font-size: 10px;
+    }
+    
+    /* Hero section */
+    .hero {
+        min-height: 85vh;
+        padding: 90px 0 50px;
+    }
+    
+    .hero-title {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+    
+    .bengali-text {
+        font-size: 32px;
+    }
+    
+    .hero-subtitle {
+        font-size: 17px;
+        margin-bottom: 15px;
+    }
+    
+    .hero-description {
+        font-size: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .hero-badge {
+        font-size: 13px;
+        padding: 7px 18px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-buttons {
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+    
+    .hero-features {
+        gap: 12px;
+    }
+    
+    .feature-item {
+        font-size: 13px;
+    }
+    
+    .feature-item i {
+        font-size: 18px;
+    }
+    
+    /* Section headers */
+    .section-header {
+        margin-bottom: 40px;
+    }
+    
+    .section-title {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+    
+    .section-subtitle {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+    
+    .section-description {
+        font-size: 15px;
+    }
+    
+    /* About section */
+    .image-wrapper img {
+        height: 280px;
+    }
+    
+    .about-stats {
+        gap: 12px;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .stat-card h3 {
+        font-size: 28px;
+    }
+    
+    .stat-card p {
+        font-size: 12px;
+    }
+    
+    .about-intro {
+        font-size: 16px;
+    }
+    
+    .about-text {
+        font-size: 14px;
+    }
+    
+    .mission-box {
+        padding: 18px;
+    }
+    
+    .mission-box h3 {
+        font-size: 17px;
+    }
+    
+    .mission-box p {
+        font-size: 14px;
+    }
+    
+    .value-item h4 {
+        font-size: 15px;
+    }
+    
+    .value-item p {
+        font-size: 13px;
+    }
+    
+    /* Cultural icons section */
+    .cultural-icons-section {
+        padding: 60px 0;
+    }
+    
+    .icons-grid {
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
     .icon-content {
-        padding: 25px;
+        padding: 20px 15px;
     }
     
     .icon-content h3 {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .icon-content h4 {
-        font-size: 18px;
+        font-size: 17px;
     }
     
     .icon-symbol {
         font-size: 40px;
     }
     
+    .icon-years {
+        font-size: 12px;
+        padding: 4px 12px;
+    }
+    
+    .icon-description {
+        font-size: 14px;
+    }
+    
+    .icon-quote {
+        padding: 15px;
+    }
+    
+    .icon-quote i {
+        font-size: 20px;
+    }
+    
     .icon-quote p {
-        font-size: 16px;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    
+    .icon-quote span {
+        font-size: 12px;
     }
     
     .cultural-elements {
         grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 40px;
+    }
+    
+    .element-card {
+        padding: 20px;
+    }
+    
+    .element-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+    }
+    
+    .element-card h4 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .element-card p {
+        font-size: 13px;
+    }
+    
+    /* Courses section */
+    .courses-grid {
+        gap: 20px;
+    }
+    
+    .course-card {
+        padding: 20px 15px;
+    }
+    
+    .course-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .course-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .course-header h3 {
+        font-size: 19px;
+    }
+    
+    .course-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    
+    .course-description {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .course-features li {
+        font-size: 13px;
+    }
+    
+    .course-btn {
+        font-size: 14px;
+        padding: 12px 24px;
+    }
+    
+    .featured-card .featured-badge {
+        font-size: 13px;
+        padding: 8px 15px;
+    }
+    
+    /* Gallery section */
+    .gallery-grid {
+        gap: 15px;
+    }
+    
+    .gallery-item img {
+        border-radius: 12px;
+    }
+    
+    .gallery-overlay {
+        padding: 15px;
+    }
+    
+    .gallery-overlay h3 {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+    
+    .gallery-overlay p {
+        font-size: 13px;
+    }
+    
+    .gallery-nav-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .gallery-prev {
+        left: 5px;
+    }
+    
+    .gallery-next {
+        right: 5px;
+    }
+    
+    .gallery-note {
+        font-size: 13px;
+    }
+    
+    /* Events section */
+    .events-grid {
+        gap: 18px;
+    }
+    
+    .event-card {
+        border-radius: 15px;
+    }
+    
+    .event-date {
+        padding: 18px;
+    }
+    
+    .event-date .day {
+        font-size: 32px;
+    }
+    
+    .event-date .month {
+        font-size: 14px;
+    }
+    
+    .event-content {
+        padding: 18px;
+    }
+    
+    .event-category {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    
+    .event-content h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .event-content p {
+        font-size: 14px;
+    }
+    
+    .event-meta {
+        font-size: 12px;
+    }
+    
+    .event-meta i {
+        font-size: 12px;
+    }
+    
+    /* Poetry section */
+    .poetry-section {
+        padding: 50px 0;
+    }
+    
+    .poetry-icon {
+        font-size: 40px;
+        margin-bottom: 15px;
     }
     
     .poetry-title {
-        font-size: 26px;
+        font-size: 24px;
+        line-height: 1.4;
+        margin-bottom: 8px;
     }
     
     .poetry-subtitle {
         font-size: 16px;
+        margin-bottom: 25px;
     }
     
     .bengali-verse {
-        font-size: 18px;
+        font-size: 16px;
+        line-height: 1.8;
     }
     
     .poetry-quote {
-        padding: 20px;
+        padding: 18px 12px;
+        margin: 25px 5px;
     }
     
-    .poetry-icon {
-        font-size: 48px;
+    .poetry-message {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    
+    /* Testimonials section */
+    .testimonials-grid {
+        gap: 18px;
+    }
+    
+    .testimonial-card {
+        padding: 20px 15px;
+    }
+    
+    .quote-icon {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+    
+    .testimonial-text {
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 15px;
+    }
+    
+    .testimonial-author h4 {
+        font-size: 16px;
+    }
+    
+    .testimonial-author p {
+        font-size: 13px;
+    }
+    
+    /* Contact section */
+    .contact-form-wrapper {
+        padding: 20px 15px;
+    }
+    
+    .contact-form h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    .info-card {
+        padding: 18px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin: 0 auto;
+    }
+    
+    .info-text h3 {
+        font-size: 17px;
+        margin-bottom: 8px;
+    }
+    
+    .info-text p {
+        font-size: 13px;
+    }
+    
+    .social-links h3 {
+        font-size: 17px;
+    }
+    
+    .social-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    /* Map section */
+    .map-section h3 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .map-container iframe {
+        height: 250px;
+    }
+    
+    .map-note {
+        font-size: 12px;
+    }
+    
+    /* Footer */
+    .footer {
+        padding: 40px 0 20px;
+    }
+    
+    .footer-content {
+        gap: 25px;
+    }
+    
+    .footer-logo .logo-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+    }
+    
+    .footer-logo h3 {
+        font-size: 20px;
+    }
+    
+    .footer-logo p {
+        font-size: 11px;
+    }
+    
+    .footer-desc {
+        font-size: 14px;
+    }
+    
+    .cultural-tagline .bengali-text {
+        font-size: 16px;
+    }
+    
+    .cultural-tagline p {
+        font-size: 13px;
+    }
+    
+    .footer-col h4 {
+        font-size: 17px;
+        margin-bottom: 15px;
+    }
+    
+    .footer-links li a {
+        font-size: 14px;
+    }
+    
+    .footer-contact {
+        font-size: 13px;
+    }
+    
+    .footer-bottom {
+        padding-top: 20px;
+        margin-top: 30px;
+    }
+    
+    .footer-bottom p {
+        font-size: 13px;
+    }
+    
+    /* Scroll to top button */
+    .scroll-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    /* Utility adjustments */
+    .fade-in {
+        animation-duration: 0.8s;
+    }
+}
+
+/* ==================== 
+   Extra Small Devices (320px and below)
+   ==================== */
+
+@media (max-width: 360px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .hero-title {
+        font-size: 24px;
+    }
+    
+    .bengali-text {
+        font-size: 28px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .course-header h3,
+    .event-content h3 {
+        font-size: 17px;
+    }
+    
+    .icon-content h3 {
+        font-size: 20px;
+    }
+    
+    .btn {
+        font-size: 13px;
+        padding: 11px 20px;
+    }
+}
+
+/* ==================== 
+   Landscape Orientation for Mobile
+   ==================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 80px 0 40px;
+    }
+    
+    .hero-title {
+        font-size: 28px;
+    }
+    
+    .hero-subtitle {
+        font-size: 18px;
+    }
+    
+    .hero-description {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+    
+    .hero-buttons {
+        margin-bottom: 30px;
+    }
+    
+    .hero-features {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .scroll-indicator {
+        display: none;
+    }
+    
+    section {
+        padding: 50px 0;
+    }
+}
+
+/* ==================== 
+   High DPI Displays (Retina)
+   ==================== */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Ensure crisp rendering on retina displays */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ==================== 
+   Reduce Motion for Accessibility
+   ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
 

@@ -23,6 +23,17 @@ hamburger.addEventListener('click', () => {
     document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
 });
 
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (navLinks.classList.contains('active') && 
+        !navLinks.contains(e.target) && 
+        !hamburger.contains(e.target)) {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+});
+
 // Close mobile menu when clicking on a nav link
 navLinksItems.forEach(link => {
     link.addEventListener('click', () => {
@@ -736,6 +747,61 @@ document.querySelectorAll('.gallery-item img').forEach(img => {
     });
 });
 */
+
+// ==================== 
+// Mobile-Specific Optimizations
+// ==================== 
+
+// Handle orientation changes
+window.addEventListener('orientationchange', () => {
+    // Close mobile menu on orientation change
+    if (navLinks.classList.contains('active')) {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Recalculate viewport height for mobile browsers
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+});
+
+// Set initial viewport height
+document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }, 250);
+});
+
+// Prevent zoom on double-tap for specific elements
+const preventDoubleTapZoom = (element) => {
+    let lastTouchEnd = 0;
+    element.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+};
+
+// Apply to buttons and links
+document.querySelectorAll('button, a.btn, .nav-link').forEach(element => {
+    preventDoubleTapZoom(element);
+});
+
+// Passive event listeners for better scroll performance
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        // Any scroll-related actions
+    }, 100);
+}, { passive: true });
 
 // ==================== 
 // Console Message
