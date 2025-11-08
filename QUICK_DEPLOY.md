@@ -26,44 +26,40 @@ git push -u origin main
 
 1. Go to https://dashboard.render.com/
 2. Sign in with GitHub (if first time)
-3. Click **"New +"** → **"Web Service"**
+3. Click **"New +"** → **"Static Site"**
 4. Click **"Connect account"** → Select your GitHub repository
 5. Fill in the form:
 
 ```
 Name: anuranan-website
 Root Directory: website
-Environment: Node
 Branch: main
-Build Command: npm install
-Start Command: npm start
+Build Command: (leave empty)
+Publish Directory: .
 ```
 
-6. Select **"Free"** plan
-7. Click **"Create Web Service"**
-8. Wait 2-3 minutes for deployment
-9. **Copy the URL** (e.g., `https://anuranan-website.onrender.com`)
+6. Click **"Create Static Site"**
+7. Wait 1-2 minutes for deployment
+8. **Copy the URL** (e.g., `https://anuranan-website.onrender.com`)
 
 ## Step 4: Deploy Admin Panel on Render
 
 1. Still in Render Dashboard
-2. Click **"New +"** → **"Web Service"**
+2. Click **"New +"** → **"Static Site"**
 3. Select **same repository**
 4. Fill in the form:
 
 ```
 Name: anuranan-admin
 Root Directory: admin
-Environment: Node
 Branch: main
-Build Command: npm install
-Start Command: npm start
+Build Command: (leave empty)
+Publish Directory: .
 ```
 
-5. Select **"Free"** plan
-6. Click **"Create Web Service"**
-7. Wait 2-3 minutes for deployment
-8. **Copy the URL** (e.g., `https://anuranan-admin.onrender.com`)
+5. Click **"Create Static Site"**
+6. Wait 1-2 minutes for deployment
+7. **Copy the URL** (e.g., `https://anuranan-admin.onrender.com`)
 
 ## ✅ You're Done!
 
@@ -73,10 +69,10 @@ You now have:
 
 ## 📝 Important Notes
 
-- **First Load**: May take 30-60 seconds (free tier cold start)
-- **Auto-Deploy**: Any push to GitHub will automatically update both sites
-- **Sleep Mode**: Free tier sleeps after 15 min inactivity
-- **Keep Alive**: Consider using a service like UptimeRobot to ping your site
+- **First Load**: Instant (static sites don't sleep)
+- **Auto-Deploy**: Any push to GitHub automatically updates both sites
+- **No Sleep Mode**: Static sites are always active on Render
+- **HTTPS**: Included automatically for free
 
 ## 🔄 To Update Your Website
 

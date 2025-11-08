@@ -36,27 +36,27 @@ After pushing to GitHub, deploy on Render with these EXACT settings:
 
 ### 🌐 For Main Website:
 
+**IMPORTANT: Choose "Static Site" NOT "Web Service"**
+
 | Setting | Value |
 |---------|-------|
 | Name | `anuranan-website` |
 | Root Directory | `website` |
-| Environment | `Node` |
 | Branch | `main` |
-| Build Command | `npm install` |
-| Start Command | `npm start` |
-| Plan | `Free` |
+| Build Command | *(leave empty)* |
+| Publish Directory | `.` |
 
 ### ⚙️ For Admin Panel:
+
+**IMPORTANT: Choose "Static Site" NOT "Web Service"**
 
 | Setting | Value |
 |---------|-------|
 | Name | `anuranan-admin` |
 | Root Directory | `admin` |
-| Environment | `Node` |
 | Branch | `main` |
-| Build Command | `npm install` |
-| Start Command | `npm start` |
-| Plan | `Free` |
+| Build Command | *(leave empty)* |
+| Publish Directory | `.` |
 
 ## ✅ That's It!
 

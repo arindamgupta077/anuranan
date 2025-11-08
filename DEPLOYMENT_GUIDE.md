@@ -48,31 +48,29 @@ git push -u origin main
 ### Step 2: Deploy Main Website on Render
 
 1. Go to [Render Dashboard](https://dashboard.render.com/)
-2. Click **"New +"** → **"Web Service"**
+2. Click **"New +"** → **"Static Site"**
 3. Connect your GitHub repository
 4. Configure the service:
    - **Name**: `anuranan-website`
    - **Root Directory**: `website`
-   - **Environment**: `Node`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-   - **Instance Type**: `Free`
+   - **Branch**: `main`
+   - **Build Command**: *(leave empty)*
+   - **Publish Directory**: `.`
 
-5. Click **"Create Web Service"**
+5. Click **"Create Static Site"**
 
 ### Step 3: Deploy Admin Panel on Render
 
-1. In Render Dashboard, click **"New +"** → **"Web Service"**
+1. In Render Dashboard, click **"New +"** → **"Static Site"**
 2. Connect the same GitHub repository
 3. Configure the service:
    - **Name**: `anuranan-admin`
    - **Root Directory**: `admin`
-   - **Environment**: `Node`
-   - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
-   - **Instance Type**: `Free`
+   - **Branch**: `main`
+   - **Build Command**: *(leave empty)*
+   - **Publish Directory**: `.`
 
-4. Click **"Create Web Service"**
+4. Click **"Create Static Site"**
 
 ### Step 4: Get Your URLs
 
@@ -97,10 +95,11 @@ Both applications use Supabase for backend services. Make sure your Supabase pro
 
 ## 📝 Important Notes
 
-- **Free Tier**: Render free tier services spin down after 15 minutes of inactivity
-- **Cold Starts**: First load after inactivity may take 30-60 seconds
+- **Static Sites**: No cold starts - always instant loading
+- **No Sleep**: Static sites don't sleep on Render's free tier
 - **Custom Domain**: You can add custom domains in Render settings
 - **HTTPS**: Render provides free SSL certificates automatically
+- **Auto-Deploy**: Automatic deployment on every git push
 
 ## 🔄 Updating Your Site
 
