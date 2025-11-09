@@ -151,20 +151,43 @@ async function loadEventsFromSupabase() {
             const time = parts[3] ? decodeURIComponent(parts[3]) : 'TBA';
             const location = parts[4] ? decodeURIComponent(parts[4]) : 'TBA';
 
+            // Fetch the JSON file to get photo URL
+            let photoUrl = '';
+            try {
+                const { data: fileData, error: fileError } = await supabaseClient.storage
+                    .from(EVENTS_BUCKET)
+                    .download(item.name);
+                
+                if (!fileError && fileData) {
+                    const text = await fileData.text();
+                    const jsonData = JSON.parse(text);
+                    photoUrl = jsonData.photoUrl || '';
+                }
+            } catch (err) {
+                console.error('Error loading event data:', err);
+            }
+
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card fade-in';
             eventCard.innerHTML = `
-                <div class="event-date">
-                    <span class="day">${day}</span>
-                    <span class="month">${month}</span>
-                </div>
-                <div class="event-content">
-                    <span class="event-category">${category}</span>
-                    <h3>${title}</h3>
-                    <p>${description}</p>
-                    <div class="event-meta">
-                        <span><i class="fas fa-clock"></i> ${time}</span>
-                        <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
+                ${photoUrl ? `
+                    <div class="event-image">
+                        <img src="${photoUrl}" alt="${title}">
+                    </div>
+                ` : ''}
+                <div class="event-card-body">
+                    <div class="event-date">
+                        <span class="day">${day}</span>
+                        <span class="month">${month}</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">${category}</span>
+                        <h3>${title}</h3>
+                        <p>${description}</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> ${time}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
+                        </div>
                     </div>
                 </div>
             `;

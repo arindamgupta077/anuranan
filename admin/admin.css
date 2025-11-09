@@ -443,7 +443,11 @@ textarea {
 .item-image {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 10px 10px 0 0;
+    margin: -1px -1px 0 -1px;
 }
 
 .item-content {

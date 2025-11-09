@@ -409,9 +409,26 @@ async function loadEventItems() {
             const time = parts[3] ? decodeURIComponent(parts[3]) : 'TBA';
             const location = parts[4] ? decodeURIComponent(parts[4]) : 'TBA';
             
+            // Fetch the JSON file to get photo URL
+            let photoUrl = '';
+            try {
+                const { data: fileData, error: fileError } = await supabase.storage
+                    .from(EVENTS_BUCKET)
+                    .download(item.name);
+                
+                if (!fileError && fileData) {
+                    const text = await fileData.text();
+                    const jsonData = JSON.parse(text);
+                    photoUrl = jsonData.photoUrl || '';
+                }
+            } catch (err) {
+                console.error('Error loading event data:', err);
+            }
+            
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
+                ${photoUrl ? `<div class="item-image" style="background-image: url('${photoUrl}');"></div>` : ''}
                 <div class="item-content">
                     <div class="event-date-badge">${day} ${month}</div>
                     <div class="event-category-badge">${category}</div>
@@ -456,7 +473,44 @@ document.getElementById('addEventBtn').addEventListener('click', () => {
     document.getElementById('eventModalTitle').textContent = 'Add Event';
     document.getElementById('eventForm').reset();
     document.getElementById('eventId').value = '';
+    document.getElementById('eventPhotoPreview').style.display = 'none';
+    document.getElementById('eventPhotoPreviewImg').src = '';
+    currentEventPhotoUrl = ''; // Reset current photo URL
+    photoRemoved = false; // Reset removal flag
     openModal('eventModal');
+});
+
+// ==================== 
+// Event Photo Preview
+// ==================== 
+
+const eventPhotoInput = document.getElementById('eventPhoto');
+const eventPhotoPreview = document.getElementById('eventPhotoPreview');
+const eventPhotoPreviewImg = document.getElementById('eventPhotoPreviewImg');
+const removeEventPhotoBtn = document.getElementById('removeEventPhoto');
+
+let currentEventPhotoUrl = ''; // Track current photo URL when editing
+let photoRemoved = false; // Track if photo was explicitly removed
+
+eventPhotoInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            eventPhotoPreviewImg.src = e.target.result;
+            eventPhotoPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        photoRemoved = false; // Reset removal flag when new photo selected
+    }
+});
+
+removeEventPhotoBtn.addEventListener('click', () => {
+    eventPhotoInput.value = '';
+    eventPhotoPreview.style.display = 'none';
+    eventPhotoPreviewImg.src = '';
+    photoRemoved = true; // Mark that photo was explicitly removed
+    currentEventPhotoUrl = ''; // Clear the current photo URL
 });
 
 // Event Form Submit
@@ -471,15 +525,50 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
     const time = document.getElementById('eventTime').value;
     const location = document.getElementById('eventLocation').value;
     const eventId = document.getElementById('eventId').value;
+    const photoFile = document.getElementById('eventPhoto').files[0];
     
     try {
         const submitBtn = e.target.querySelector('.btn-save');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         
+        let photoUrl = '';
+        
+        // Determine photo URL logic:
+        // 1. If new photo uploaded, use new photo
+        // 2. If photo was explicitly removed, use empty string
+        // 3. If editing and no new photo and not removed, keep existing photo
+        if (photoFile) {
+            // Upload new photo
+            const photoFileName = `${day}_${month}_${Date.now()}_${photoFile.name}`;
+            const { data: photoData, error: photoError } = await supabase.storage
+                .from(EVENTS_BUCKET)
+                .upload(`photos/${photoFileName}`, photoFile, {
+                    contentType: photoFile.type,
+                    cacheControl: '3600',
+                    upsert: true
+                });
+            
+            if (photoError) throw photoError;
+            
+            // Get public URL for the photo
+            const { data: { publicUrl } } = supabase.storage
+                .from(EVENTS_BUCKET)
+                .getPublicUrl(`photos/${photoFileName}`);
+            
+            photoUrl = publicUrl;
+        } else if (photoRemoved) {
+            // Photo was explicitly removed
+            photoUrl = '';
+        } else {
+            // Keep existing photo URL if editing
+            photoUrl = currentEventPhotoUrl;
+        }
+        
         if (eventId) {
             // Delete old event file
             await supabase.storage.from(EVENTS_BUCKET).remove([eventId]);
+            // Note: old photos are not deleted to avoid breaking references
         }
         
         // Create filename with metadata
@@ -494,6 +583,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
             description,
             time,
             location,
+            photoUrl: photoUrl || '',
             created_at: new Date().toISOString()
         };
         
@@ -502,7 +592,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
             .from(EVENTS_BUCKET)
             .upload(fileName, JSON.stringify(eventData), {
                 contentType: 'application/json',
-                cacheControl: '3600',
+                cacheControl: 'no-cache',
                 upsert: true
             });
         
@@ -519,10 +609,11 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Event';
     }
+
 });
 
 // Edit Event Item
-function editEventItem(fileName) {
+async function editEventItem(fileName) {
     const parts = fileName.replace('.json', '').split('___');
     const dateParts = parts[0].split('_');
     
@@ -535,6 +626,31 @@ function editEventItem(fileName) {
     document.getElementById('eventTime').value = parts[3] ? decodeURIComponent(parts[3]) : '';
     document.getElementById('eventLocation').value = parts[4] ? decodeURIComponent(parts[4]) : '';
     document.getElementById('eventId').value = fileName;
+    
+    // Reset photo state
+    document.getElementById('eventPhotoPreview').style.display = 'none';
+    document.getElementById('eventPhoto').value = '';
+    currentEventPhotoUrl = ''; // Reset current photo URL
+    photoRemoved = false; // Reset removal flag
+    
+    try {
+        const { data: fileData, error: fileError } = await supabase.storage
+            .from(EVENTS_BUCKET)
+            .download(fileName);
+        
+        if (!fileError && fileData) {
+            const text = await fileData.text();
+            const jsonData = JSON.parse(text);
+            
+            if (jsonData.photoUrl) {
+                currentEventPhotoUrl = jsonData.photoUrl; // Store current photo URL
+                document.getElementById('eventPhotoPreviewImg').src = jsonData.photoUrl;
+                document.getElementById('eventPhotoPreview').style.display = 'block';
+            }
+        }
+    } catch (err) {
+        console.error('Error loading event photo:', err);
+    }
     
     openModal('eventModal');
 }

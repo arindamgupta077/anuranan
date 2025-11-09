@@ -401,41 +401,6 @@ button {
     }
 }
 
-/* Add poet images to hero background */
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 10%;
-    left: 5%;
-    width: 200px;
-    height: 250px;
-    background-image: url('../public/sukumar1.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.05;
-    pointer-events: none;
-    filter: grayscale(60%);
-    z-index: 1;
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: 10%;
-    right: 5%;
-    width: 200px;
-    height: 250px;
-    background-image: url('../public/sukanta1.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.05;
-    pointer-events: none;
-    filter: grayscale(60%);
-    z-index: 1;
-}
-
 @keyframes float {
     0% { 
         transform: translate(-50%, -50%) rotate(0deg) scale(1); 
@@ -1528,17 +1493,44 @@ section {
 .event-card {
     background: var(--white);
     border-radius: 15px;
-    padding: 25px;
+    padding: 0;
     box-shadow: 0 5px 25px var(--shadow);
     display: flex;
-    gap: 20px;
+    gap: 0;
     transition: var(--transition);
     border-left: 4px solid var(--primary-yellow);
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .event-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 35px var(--shadow-hover);
+}
+
+.event-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 0;
+    margin: 0;
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.event-card:hover .event-image img {
+    transform: scale(1.05);
+}
+
+.event-card-body {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
 }
 
 .event-date {
@@ -1621,10 +1613,15 @@ section {
     padding: 80px 0;
 }
 
+.class-details-section .container {
+    max-width: 1600px; /* Much wider container for Class Details section */
+    padding: 0 40px; /* Increased padding for better spacing */
+}
+
 .class-details-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 50px;
+    grid-template-columns: 1.5fr 1fr; /* Image takes more space */
+    gap: 80px; /* Larger gap for more horizontal spread */
     margin-top: 50px;
 }
 
