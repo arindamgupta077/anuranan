@@ -220,6 +220,40 @@ ul {
     overflow: hidden;
 }
 
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    width: 200px;
+    height: 250px;
+    background-image: url('../public/sukumar1.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    pointer-events: none;
+    filter: grayscale(60%);
+    z-index: 1;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    right: 5%;
+    width: 200px;
+    height: 250px;
+    background-image: url('../public/sukanta1.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.05;
+    pointer-events: none;
+    filter: grayscale(60%);
+    z-index: 1;
+}
+
 .hero-pattern {
     position: absolute;
     top: 0;
@@ -535,7 +569,7 @@ section {
     left: -5%;
     width: 50%;
     height: 100%;
-    background-image: url('../public/Rabindranath.jpg');
+    background-image: url('../public/Rabindranath1.png');
     background-size: cover;
     background-position: center;
     opacity: 0.08;
@@ -550,7 +584,7 @@ section {
     right: -5%;
     width: 50%;
     height: 100%;
-    background-image: url('../public/najrul.jpg');
+    background-image: url('../public/najrul1.png');
     background-size: cover;
     background-position: center;
     opacity: 0.08;
@@ -747,7 +781,7 @@ section {
     right: 0;
     width: 400px;
     height: 400px;
-    background-image: url('../public/Rabindranath.jpg');
+    background-image: url('../public/sukumar1.png');
     background-size: cover;
     background-position: center top;
     opacity: 0.04;
@@ -901,7 +935,7 @@ section {
     left: 0;
     width: 300px;
     height: 500px;
-    background-image: url('../public/najrul.jpg');
+    background-image: url('../public/jibanananda1.png');
     background-size: cover;
     background-position: center;
     opacity: 0.03;
@@ -1066,6 +1100,39 @@ section {
 
 .gallery-section {
     background: var(--off-white);
+    position: relative;
+}
+
+.gallery-section::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 2%;
+    width: 180px;
+    height: 220px;
+    background-image: url('../public/Rabindranath1.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.04;
+    pointer-events: none;
+    filter: grayscale(70%);
+}
+
+.gallery-section::after {
+    content: '';
+    position: absolute;
+    bottom: 5%;
+    right: 2%;
+    width: 180px;
+    height: 220px;
+    background-image: url('../public/najrul1.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.04;
+    pointer-events: none;
+    filter: grayscale(70%);
 }
 
 .gallery-grid {
@@ -1255,6 +1322,23 @@ section {
 
 .events-section {
     background: var(--white);
+    position: relative;
+}
+
+.events-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 300px;
+    background-image: url('../public/jibanananda1.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.03;
+    pointer-events: none;
+    filter: grayscale(80%);
 }
 
 .events-grid {
@@ -1369,8 +1453,8 @@ section {
     width: 100%;
     height: 100%;
     background-image: 
-        url('../public/Rabindranath.jpg'),
-        url('../public/najrul.jpg');
+        url('../public/sukanta1.png'),
+        url('../public/jibanananda1.png');
     background-size: 500px auto, 500px auto;
     background-position: -10% center, 110% center;
     background-repeat: no-repeat;
@@ -1561,7 +1645,7 @@ section {
     left: 0;
     width: 350px;
     height: 100%;
-    background-image: url('../public/Rabindranath.jpg');
+    background-image: url('../public/Rabindranath1.png');
     background-size: cover;
     background-position: center;
     opacity: 0.04;
@@ -1576,7 +1660,7 @@ section {
     right: 0;
     width: 350px;
     height: 100%;
-    background-image: url('../public/najrul.jpg');
+    background-image: url('../public/sukumar1.png');
     background-size: cover;
     background-position: center;
     opacity: 0.04;
