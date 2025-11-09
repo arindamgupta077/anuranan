@@ -12,9 +12,6 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const GALLERY_BUCKET = 'gallery-photos';
 const EVENTS_BUCKET = 'event-images';
 
-// Admin password (In production, use proper authentication)
-const ADMIN_PASSWORD = 'anuranan2024';
-
 // ==================== 
 // State Management
 // ==================== 
@@ -23,44 +20,67 @@ let currentDeleteItem = null;
 let currentDeleteType = null;
 let galleryItems = [];
 let eventItems = [];
+let classItems = [];
+let currentUser = null;
 
 // ==================== 
-// Authentication
+// Authentication with Supabase Auth
 // ==================== 
 
-function checkAuth() {
-    const isLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+async function checkAuth() {
     const loginSection = document.getElementById('loginSection');
     const adminDashboard = document.getElementById('adminDashboard');
     
-    if (isLoggedIn) {
+    // Check current session
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (session && session.user) {
+        currentUser = session.user;
         loginSection.style.display = 'none';
         adminDashboard.style.display = 'flex';
         loadGalleryItems();
         loadEventItems();
+        loadClassItems();
+        loadContactMessages();
     } else {
+        currentUser = null;
         loginSection.style.display = 'flex';
         adminDashboard.style.display = 'none';
     }
 }
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
     const errorMessage = document.getElementById('loginError');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
     
-    if (password === ADMIN_PASSWORD) {
-        sessionStorage.setItem('adminLoggedIn', 'true');
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+        
+        if (error) throw error;
+        
         errorMessage.classList.remove('show');
-        checkAuth();
-    } else {
-        errorMessage.textContent = 'Incorrect password. Please try again.';
+        await checkAuth();
+    } catch (error) {
+        console.error('Login error:', error);
+        errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
         errorMessage.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
     }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.removeItem('adminLoggedIn');
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    currentUser = null;
     window.location.reload();
 });
 
@@ -566,6 +586,439 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async () =
         btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
     }
 });
+
+// ==================== 
+// Class Details Management
+// ==================== 
+
+async function loadClassItems() {
+    try {
+        const { data, error } = await supabase
+            .from('class_details')
+            .select('*')
+            .order('created_at', { ascending: true });
+        
+        if (error) throw error;
+        
+        classItems = data || [];
+        displayClassItems();
+    } catch (error) {
+        console.error('Error loading class items:', error);
+        document.getElementById('classDetailsItemsGrid').innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Error loading class details: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+function displayClassItems() {
+    const grid = document.getElementById('classDetailsItemsGrid');
+    
+    if (classItems.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <p>No class details added yet</p>
+                <button class="btn-add" onclick="document.getElementById('addClassBtn').click()">
+                    <i class="fas fa-plus"></i> Add Your First Class
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Get day color based on day of week
+    const getDayColor = (day) => {
+        const colors = {
+            'Sunday': '#FF6B6B',
+            'Monday': '#4ECDC4',
+            'Tuesday': '#45B7D1',
+            'Wednesday': '#FFA07A',
+            'Thursday': '#98D8C8',
+            'Friday': '#F7DC6F',
+            'Saturday': '#BB8FCE'
+        };
+        return colors[day] || '#1B4B8F';
+    };
+    
+    grid.innerHTML = classItems.map(item => `
+        <div class="class-card">
+            <div class="class-card-header" style="background: linear-gradient(135deg, ${getDayColor(item.day)}, ${getDayColor(item.day)}dd);">
+                <div class="class-day-badge">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>${item.day}</span>
+                </div>
+                <div class="class-card-actions">
+                    <button class="btn-icon-modern btn-edit" onclick="editClass('${item.id}')" title="Edit Class">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon-modern btn-delete" onclick="deleteClass('${item.id}')" title="Delete Class">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="class-card-body">
+                <div class="class-subject">
+                    <i class="fas fa-book-reader"></i>
+                    <h3>${item.subject}</h3>
+                </div>
+                <div class="class-details-grid">
+                    <div class="class-detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                            <span class="detail-label">Branch</span>
+                            <span class="detail-value">${item.branch}</span>
+                        </div>
+                    </div>
+                    <div class="class-detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="detail-content">
+                            <span class="detail-label">Timings</span>
+                            <span class="detail-value">${item.timings}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add Class Button
+document.getElementById('addClassBtn').addEventListener('click', () => {
+    document.getElementById('classModalTitle').textContent = 'Add Class Details';
+    document.getElementById('classForm').reset();
+    document.getElementById('classId').value = '';
+    openModal('classModal');
+});
+
+// Class Form Submission
+document.getElementById('classForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const classId = document.getElementById('classId').value;
+    const classData = {
+        subject: document.getElementById('classSubject').value.trim(),
+        branch: document.getElementById('classBranch').value.trim(),
+        day: document.getElementById('classDay').value,
+        timings: document.getElementById('classTimings').value.trim()
+    };
+    
+    try {
+        const submitBtn = e.target.querySelector('.btn-save');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        
+        let error;
+        
+        if (classId) {
+            // Update existing class
+            const result = await supabase
+                .from('class_details')
+                .update(classData)
+                .eq('id', classId);
+            error = result.error;
+        } else {
+            // Insert new class
+            const result = await supabase
+                .from('class_details')
+                .insert([classData]);
+            error = result.error;
+        }
+        
+        if (error) throw error;
+        
+        showToast(classId ? 'Class updated successfully!' : 'Class added successfully!');
+        closeModal('classModal');
+        loadClassItems();
+    } catch (error) {
+        console.error('Error saving class:', error);
+        showToast('Error saving class: ' + error.message, true);
+    } finally {
+        const submitBtn = e.target.querySelector('.btn-save');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Class';
+    }
+});
+
+// Edit Class
+async function editClass(id) {
+    const classItem = classItems.find(item => item.id === id);
+    if (!classItem) return;
+    
+    document.getElementById('classModalTitle').textContent = 'Edit Class Details';
+    document.getElementById('classId').value = classItem.id;
+    document.getElementById('classSubject').value = classItem.subject;
+    document.getElementById('classBranch').value = classItem.branch;
+    document.getElementById('classDay').value = classItem.day;
+    document.getElementById('classTimings').value = classItem.timings;
+    
+    openModal('classModal');
+}
+
+// Delete Class
+async function deleteClass(id) {
+    try {
+        const confirmDelete = confirm('Are you sure you want to delete this class? This action cannot be undone.');
+        if (!confirmDelete) return;
+        
+        const { error } = await supabase
+            .from('class_details')
+            .delete()
+            .eq('id', id);
+        
+        if (error) throw error;
+        
+        showToast('Class deleted successfully!');
+        loadClassItems();
+    } catch (error) {
+        console.error('Error deleting class:', error);
+        showToast('Error deleting class: ' + error.message, true);
+    }
+}
+
+// Make functions globally available
+window.editClass = editClass;
+window.deleteClass = deleteClass;
+
+// ==================== 
+// Contact Messages Management
+// ==================== 
+
+let currentMessageFilter = 'all';
+let allMessages = [];
+
+async function loadContactMessages() {
+    const container = document.getElementById('messagesContainer');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>';
+    
+    try {
+        const { data, error } = await supabase
+            .from('contact_messages')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        allMessages = data || [];
+        updateUnreadBadge();
+        displayMessages(currentMessageFilter);
+        
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        container.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading messages: ${error.message}</p>
+                <button onclick="loadContactMessages()" class="btn-retry">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            </div>
+        `;
+    }
+}
+
+function displayMessages(filter) {
+    const container = document.getElementById('messagesContainer');
+    currentMessageFilter = filter;
+    
+    // Update filter buttons
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    
+    // Filter messages
+    let filteredMessages = allMessages;
+    if (filter === 'read') {
+        filteredMessages = allMessages.filter(msg => msg.read === true);
+    } else if (filter === 'unread') {
+        filteredMessages = allMessages.filter(msg => msg.read === false);
+    }
+    
+    if (filteredMessages.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No ${filter === 'all' ? '' : filter} messages found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Display messages
+    let html = '<div class="messages-grid">';
+    filteredMessages.forEach(msg => {
+        const date = new Date(msg.created_at);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        html += `
+            <div class="message-card ${msg.read ? 'read' : 'unread'}">
+                <div class="message-header">
+                    <div class="message-sender">
+                        <i class="fas fa-user-circle"></i>
+                        <strong>${escapeHtml(msg.name)}</strong>
+                    </div>
+                    <span class="message-date">
+                        <i class="far fa-clock"></i> ${formattedDate}
+                    </span>
+                </div>
+                
+                <div class="message-contact">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <a href="tel:${msg.phone}">${escapeHtml(msg.phone)}</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:${msg.email}">${escapeHtml(msg.email)}</a>
+                    </div>
+                    ${msg.course ? `
+                        <div class="contact-item">
+                            <i class="fas fa-book"></i>
+                            <span>${escapeHtml(msg.course)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${msg.message ? `
+                    <div class="message-content">
+                        <strong>Message:</strong>
+                        <p>${escapeHtml(msg.message)}</p>
+                    </div>
+                ` : ''}
+                
+                <div class="message-actions">
+                    <button 
+                        onclick="toggleReadStatus('${msg.id}', ${msg.read})" 
+                        class="btn-action ${msg.read ? 'btn-mark-unread' : 'btn-mark-read'}"
+                        title="${msg.read ? 'Mark as Unread' : 'Mark as Read'}">
+                        <i class="fas ${msg.read ? 'fa-envelope' : 'fa-envelope-open'}"></i>
+                        ${msg.read ? 'Mark Unread' : 'Mark Read'}
+                    </button>
+                    <button 
+                        onclick="deleteMessage('${msg.id}')" 
+                        class="btn-action btn-delete"
+                        title="Delete Message">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+async function toggleReadStatus(messageId, currentStatus) {
+    try {
+        const { error } = await supabase
+            .from('contact_messages')
+            .update({ read: !currentStatus })
+            .eq('id', messageId);
+        
+        if (error) throw error;
+        
+        // Update local data
+        const message = allMessages.find(m => m.id === messageId);
+        if (message) {
+            message.read = !currentStatus;
+        }
+        
+        updateUnreadBadge();
+        displayMessages(currentMessageFilter);
+        showToast(currentStatus ? 'Message marked as unread' : 'Message marked as read');
+        
+    } catch (error) {
+        console.error('Error updating message:', error);
+        showToast('Error updating message status', true);
+    }
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm('Are you sure you want to delete this message? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('contact_messages')
+            .delete()
+            .eq('id', messageId);
+        
+        if (error) throw error;
+        
+        // Remove from local data
+        allMessages = allMessages.filter(m => m.id !== messageId);
+        
+        updateUnreadBadge();
+        displayMessages(currentMessageFilter);
+        showToast('Message deleted successfully');
+        
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        showToast('Error deleting message', true);
+    }
+}
+
+function updateUnreadBadge() {
+    const unreadCount = allMessages.filter(m => !m.read).length;
+    const badge = document.getElementById('unreadBadge');
+    
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Event listeners for message filters
+document.addEventListener('DOMContentLoaded', () => {
+    const filterAll = document.getElementById('filterAll');
+    const filterUnread = document.getElementById('filterUnread');
+    const filterRead = document.getElementById('filterRead');
+    const refreshBtn = document.getElementById('refreshMessagesBtn');
+    
+    if (filterAll) {
+        filterAll.addEventListener('click', () => displayMessages('all'));
+    }
+    if (filterUnread) {
+        filterUnread.addEventListener('click', () => displayMessages('unread'));
+    }
+    if (filterRead) {
+        filterRead.addEventListener('click', () => displayMessages('read'));
+    }
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => loadContactMessages());
+    }
+});
+
+// Make functions globally available
+window.toggleReadStatus = toggleReadStatus;
+window.deleteMessage = deleteMessage;
+window.loadContactMessages = loadContactMessages;
 
 // ==================== 
 // Initialize

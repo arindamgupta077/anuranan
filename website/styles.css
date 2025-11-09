@@ -1613,8 +1613,216 @@ section {
 }
 
 /* ==================== 
-   Bengali Poetry Section 
+   Class Details Section 
    ==================== */
+
+.class-details-section {
+    background: var(--light-bg);
+    padding: 80px 0;
+}
+
+.class-details-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    margin-top: 50px;
+}
+
+.class-image-container {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.class-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.class-image-container:hover .class-image {
+    transform: scale(1.05);
+}
+
+.class-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(27, 75, 143, 0.8), rgba(253, 184, 19, 0.6));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.class-image-container:hover .class-image-overlay {
+    opacity: 1;
+}
+
+.class-image-overlay i {
+    font-size: 64px;
+    color: var(--white);
+}
+
+.class-schedule-container {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.schedule-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--pale-yellow);
+}
+
+.schedule-header i {
+    font-size: 32px;
+    color: var(--primary-blue);
+}
+
+.schedule-header h3 {
+    font-size: 24px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.class-schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loading-spinner,
+.error-message,
+.no-classes {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+}
+
+.loading-spinner i,
+.error-message i,
+.no-classes i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    display: block;
+    color: var(--primary-blue);
+}
+
+.day-schedule {
+    border: 2px solid var(--pale-yellow);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.day-schedule:hover {
+    box-shadow: 0 5px 15px rgba(27, 75, 143, 0.15);
+    transform: translateY(-2px);
+}
+
+.day-header {
+    background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+    color: var(--white);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.day-header i {
+    font-size: 20px;
+}
+
+.day-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.day-classes {
+    padding: 15px;
+    background: var(--white);
+}
+
+.class-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--light-bg);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.class-item:last-child {
+    margin-bottom: 0;
+}
+
+.class-item:hover {
+    background: var(--pale-yellow);
+    transform: translateX(5px);
+}
+
+.class-info h5 {
+    font-size: 16px;
+    color: var(--text-dark);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.class-info h5 i {
+    color: var(--primary-yellow);
+    font-size: 14px;
+}
+
+.class-branch {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.class-branch i {
+    color: var(--primary-blue);
+    font-size: 12px;
+}
+
+.class-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    white-space: nowrap;
+}
+
+.class-time i {
+    color: var(--primary-yellow);
+}
+
+/* ==================== 
+   Bengali Poetry Section 
+   ====================*/
 
 .poetry-section {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
@@ -2591,6 +2799,34 @@ section {
     .event-meta {
         flex-direction: column;
         gap: 8px;
+    }
+
+    /* Class Details section */
+    .class-details-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .class-image-container {
+        height: 300px;
+    }
+
+    .class-schedule-container {
+        padding: 20px;
+    }
+
+    .schedule-header h3 {
+        font-size: 20px;
+    }
+
+    .class-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .class-time {
+        align-self: flex-start;
     }
     
     /* Poetry section */

@@ -259,24 +259,56 @@ scrollTopBtn.addEventListener('click', () => {
 
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get form data
-    const formData = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        course: document.getElementById('course').value,
-        message: document.getElementById('message').value
-    };
+    // Get the submit button
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
     
-    // Here you would typically send the data to a server
-    // For now, we'll just show a success message
-    showNotification('Thank you! Your message has been sent successfully. We will contact you soon.', 'success');
+    // Disable button and show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     
-    // Reset form
-    contactForm.reset();
+    try {
+        // Get form data
+        const formData = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            course: document.getElementById('course').value || null,
+            message: document.getElementById('message').value || null
+        };
+        
+        // Check if Supabase is available
+        if (typeof supabaseClient === 'undefined') {
+            throw new Error('Database connection not available. Please try again later.');
+        }
+        
+        // Insert data into Supabase
+        const { data, error } = await supabaseClient
+            .from('contact_messages')
+            .insert([formData]);
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            throw new Error('Failed to send message. Please try again.');
+        }
+        
+        // Show success message
+        showNotification('Thank you! Your message has been sent successfully. We will contact you soon.', 'success');
+        
+        // Reset form
+        contactForm.reset();
+        
+    } catch (error) {
+        console.error('Form submission error:', error);
+        showNotification(error.message || 'Failed to send message. Please try again.', 'error');
+    } finally {
+        // Re-enable button and restore original text
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonText;
+    }
 });
 
 // ==================== 

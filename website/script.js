@@ -270,24 +270,56 @@ scrollTopBtn.addEventListener('click', () => {
 
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get form data
-    const formData = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        course: document.getElementById('course').value,
-        message: document.getElementById('message').value
-    };
+    // Get the submit button
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
     
-    // Here you would typically send the data to a server
-    // For now, we'll just show a success message
-    showNotification('Thank you! Your message has been sent successfully. We will contact you soon.', 'success');
+    // Disable button and show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
     
-    // Reset form
-    contactForm.reset();
+    try {
+        // Get form data
+        const formData = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            course: document.getElementById('course').value || null,
+            message: document.getElementById('message').value || null
+        };
+        
+        // Check if Supabase is available
+        if (typeof supabaseClient === 'undefined') {
+            throw new Error('Database connection not available. Please try again later.');
+        }
+        
+        // Insert data into Supabase
+        const { data, error } = await supabaseClient
+            .from('contact_messages')
+            .insert([formData]);
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            throw new Error('Failed to send message. Please try again.');
+        }
+        
+        // Show success message
+        showNotification('Thank you! Your message has been sent successfully. We will contact you soon.', 'success');
+        
+        // Reset form
+        contactForm.reset();
+        
+    } catch (error) {
+        console.error('Form submission error:', error);
+        showNotification(error.message || 'Failed to send message. Please try again.', 'error');
+    } finally {
+        // Re-enable button and restore original text
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonText;
+    }
 });
 
 // ==================== 
@@ -802,6 +834,107 @@ window.addEventListener('scroll', () => {
         // Any scroll-related actions
     }, 100);
 }, { passive: true });
+
+// ==================== 
+// Class Details Section
+// ==================== 
+
+async function loadClassDetails() {
+    const container = document.getElementById('classScheduleList');
+    
+    // Check if Supabase is loaded
+    if (typeof supabaseClient === 'undefined') {
+        console.error('Supabase client not loaded');
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Unable to load class details. Please refresh the page.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('class_details')
+            .select('*')
+            .order('created_at', { ascending: true });
+        
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+        }
+        
+        displayClassDetails(data || []);
+    } catch (error) {
+        console.error('Error loading class details:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Unable to load class details. Please try again later.</p>
+                <small style="display: block; margin-top: 10px; color: #999;">${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+function displayClassDetails(classes) {
+    const container = document.getElementById('classScheduleList');
+    
+    if (classes.length === 0) {
+        container.innerHTML = `
+            <div class="no-classes">
+                <i class="fas fa-info-circle"></i>
+                <p>No class schedules available at the moment.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Group classes by day
+    const daysOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const groupedClasses = {};
+    
+    classes.forEach(classItem => {
+        if (!groupedClasses[classItem.day]) {
+            groupedClasses[classItem.day] = [];
+        }
+        groupedClasses[classItem.day].push(classItem);
+    });
+    
+    container.innerHTML = daysOrder
+        .filter(day => groupedClasses[day])
+        .map(day => {
+            const dayClasses = groupedClasses[day];
+            return `
+                <div class="day-schedule">
+                    <div class="day-header">
+                        <i class="fas fa-calendar-day"></i>
+                        <h4>${day}</h4>
+                    </div>
+                    <div class="day-classes">
+                        ${dayClasses.map(classItem => `
+                            <div class="class-item">
+                                <div class="class-info">
+                                    <h5><i class="fas fa-book-reader"></i> ${classItem.subject}</h5>
+                                    <p class="class-branch"><i class="fas fa-map-marker-alt"></i> ${classItem.branch}</p>
+                                </div>
+                                <div class="class-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${classItem.timings}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+}
+
+// Load class details when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadClassDetails();
+});
 
 // ==================== 
 // Console Message

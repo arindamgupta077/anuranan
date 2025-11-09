@@ -31,6 +31,7 @@
                     <a href="#home" class="nav-link active">Home</a>
                     <a href="#about" class="nav-link">About Us</a>
                     <a href="#courses" class="nav-link">Courses</a>
+                    <a href="#class-details" class="nav-link">Class Details</a>
                     <a href="#gallery" class="nav-link">Gallery</a>
                     <a href="#events" class="nav-link">Events</a>
                     <a href="#contact" class="nav-link">Contact</a>
@@ -426,6 +427,43 @@
                         <li><i class="fas fa-check"></i> Priority Event Participation</li>
                     </ul>
                     <a href="#contact" class="course-btn featured-btn">Get Special Offer</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Class Details Section -->
+    <section id="class-details" class="class-details-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-subtitle">Where & When</span>
+                <h2 class="section-title">Class <span class="highlight">Details</span></h2>
+                <div class="title-underline"></div>
+                <p class="section-description">
+                    Find out about our class schedules, locations, and timings
+                </p>
+            </div>
+            
+            <div class="class-details-content">
+                <div class="class-image-container fade-in">
+                    <img src="public/classes.jpg" alt="Our Classes" class="class-image">
+                    <div class="class-image-overlay">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                </div>
+                
+                <div class="class-schedule-container fade-in">
+                    <div class="schedule-header">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Weekly Schedule</h3>
+                    </div>
+                    <div id="classScheduleList" class="class-schedule-list">
+                        <!-- Classes will be loaded dynamically -->
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading class details...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
