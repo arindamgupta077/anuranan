@@ -1168,6 +1168,11 @@ section {
     color: var(--white);
 }
 
+.course-badge.discount {
+    background: #dc3545;
+    color: var(--white);
+}
+
 .course-description {
     font-size: 15px;
     color: var(--text-light);

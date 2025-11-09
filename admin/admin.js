@@ -90,8 +90,14 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 
 document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
-        e.preventDefault();
         const section = item.dataset.section;
+        
+        // If it's an external link (no data-section), allow default behavior
+        if (!section) {
+            return; // Let the link navigate normally
+        }
+        
+        e.preventDefault();
         
         // Update active menu item
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));

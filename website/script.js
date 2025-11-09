@@ -937,6 +937,108 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==================== 
+// Courses Dynamic Loading
+// ==================== 
+
+async function loadCourses() {
+    try {
+        // Check if Supabase is loaded
+        if (typeof supabaseClient === 'undefined') {
+            console.error('Supabase client not loaded');
+            return;
+        }
+
+        // Fetch courses from Supabase
+        const { data: courses, error } = await supabaseClient
+            .from('courses')
+            .select('*')
+            .eq('is_active', true)
+            .order('display_order', { ascending: true });
+
+        if (error) {
+            console.error('Error loading courses:', error);
+            return;
+        }
+
+        if (courses && courses.length > 0) {
+            renderCourses(courses);
+        }
+    } catch (error) {
+        console.error('Error loading courses:', error);
+    }
+}
+
+function renderCourses(courses) {
+    const coursesGrid = document.querySelector('.courses-grid');
+    if (!coursesGrid) return;
+
+    coursesGrid.innerHTML = courses.map(course => {
+        // Parse features from JSONB
+        const features = Array.isArray(course.features) ? course.features : [];
+        
+        // Determine badge HTML
+        let badgeHtml = '';
+        if (course.badge) {
+            const badgeClass = course.badge_type || 'popular';
+            badgeHtml = `<span class="course-badge ${badgeClass}">${course.badge}</span>`;
+        }
+
+        // Determine if featured
+        const cardClass = course.is_featured ? 'course-card featured-card fade-in' : 'course-card fade-in';
+        
+        // Featured badge for special offers
+        let featuredBadgeHtml = '';
+        if (course.is_featured && course.featured_text) {
+            featuredBadgeHtml = `
+                <div class="featured-badge">
+                    <i class="fas fa-crown"></i> ${course.featured_text}
+                </div>
+            `;
+        }
+
+        // Button class
+        const btnClass = course.is_featured ? 'course-btn featured-btn' : 'course-btn';
+        const buttonText = course.button_text || 'Enroll Now';
+
+        return `
+            <div class="${cardClass}">
+                ${featuredBadgeHtml}
+                <div class="course-icon">
+                    <i class="${course.icon}"></i>
+                </div>
+                <div class="course-header">
+                    <h3>${course.title}</h3>
+                    ${badgeHtml}
+                </div>
+                <p class="course-description">
+                    ${course.description}
+                </p>
+                <ul class="course-features">
+                    ${features.map(feature => `
+                        <li><i class="fas fa-check"></i> ${feature}</li>
+                    `).join('')}
+                </ul>
+                <a href="#contact" class="${btnClass}">${buttonText}</a>
+            </div>
+        `;
+    }).join('');
+
+    // Re-trigger fade-in animations
+    const cards = coursesGrid.querySelectorAll('.fade-in');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+// Load courses when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadCourses();
+});
+
+// ==================== 
 // Console Message
 // ==================== 
 
