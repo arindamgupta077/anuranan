@@ -1464,6 +1464,31 @@ section {
     margin-right: 8px;
 }
 
+/* No Items Message */
+.no-items-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+    background: var(--off-white);
+    border-radius: 15px;
+    border: 2px dashed var(--border-color);
+}
+
+.no-items-message i {
+    font-size: 64px;
+    color: var(--primary-blue);
+    opacity: 0.3;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.no-items-message p {
+    font-size: 18px;
+    margin: 0;
+    color: var(--text-light);
+}
+
 /* ==================== 
    Events Section 
    ==================== */

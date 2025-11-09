@@ -198,22 +198,30 @@ async function loadGalleryItems() {
         // Render items
         grid.innerHTML = '';
         for (const item of galleryItems) {
+            // Add cache busting parameter to public URL
             const { data: urlData } = supabase.storage
                 .from(GALLERY_BUCKET)
                 .getPublicUrl(item.name);
             
-            // Parse metadata from filename (format: title___description.ext)
+            // Add cache buster using item's updated_at timestamp
+            const cacheBuster = item.updated_at ? new Date(item.updated_at).getTime() : Date.now();
+            const imageUrl = `${urlData.publicUrl}?t=${cacheBuster}`;
+            
+            // Parse metadata from filename (format: title___description___timestamp.ext or title___description.ext)
             const fileNameParts = item.name.split('___');
             const title = fileNameParts[0] ? decodeURIComponent(fileNameParts[0]) : 'Untitled';
-            const description = fileNameParts[1] ? decodeURIComponent(fileNameParts[1].split('.')[0]) : 'No description';
+            // Handle both new format (with timestamp) and old format (without)
+            const descPart = fileNameParts[1] || 'No description';
+            const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
+            const cleanDescription = decodeURIComponent(description);
             
             const card = document.createElement('div');
             card.className = 'item-card';
             card.innerHTML = `
-                <img src="${urlData.publicUrl}" alt="${title}" class="item-image">
+                <img src="${imageUrl}" alt="${title}" class="item-image">
                 <div class="item-content">
                     <h3 class="item-title">${title}</h3>
-                    <p class="item-description">${description}</p>
+                    <p class="item-description">${cleanDescription}</p>
                     <div class="item-actions">
                         <button class="btn-edit" onclick="editGalleryItem('${item.name}')">
                             <i class="fas fa-edit"></i> Edit
@@ -246,6 +254,50 @@ async function loadGalleryItems() {
             </div>
         `;
     }
+}
+
+// Refresh Gallery Button
+document.getElementById('refreshGalleryBtn').addEventListener('click', () => {
+    const btn = document.getElementById('refreshGalleryBtn');
+    const icon = btn.querySelector('i');
+    icon.classList.add('fa-spin');
+    btn.disabled = true;
+    
+    loadGalleryItems().then(() => {
+        icon.classList.remove('fa-spin');
+        btn.disabled = false;
+        showGalleryStatus('Gallery refreshed successfully', 'success');
+    }).catch(() => {
+        icon.classList.remove('fa-spin');
+        btn.disabled = false;
+        showGalleryStatus('Error refreshing gallery', 'error');
+    });
+});
+
+// Show gallery status message
+function showGalleryStatus(message, type = 'info') {
+    const statusDiv = document.getElementById('galleryStatusMessage');
+    const statusText = document.getElementById('galleryStatusText');
+    
+    statusText.textContent = message;
+    statusDiv.style.display = 'block';
+    
+    // Set color based on type
+    if (type === 'success') {
+        statusDiv.style.background = '#e8f5e9';
+        statusDiv.style.borderColor = '#4caf50';
+    } else if (type === 'error') {
+        statusDiv.style.background = '#ffebee';
+        statusDiv.style.borderColor = '#f44336';
+    } else {
+        statusDiv.style.background = '#e3f2fd';
+        statusDiv.style.borderColor = '#2196f3';
+    }
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        statusDiv.style.display = 'none';
+    }, 5000);
 }
 
 // Add Gallery Item
@@ -292,28 +344,69 @@ document.getElementById('galleryForm').addEventListener('submit', async (e) => {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         
         if (galleryId) {
-            // Update existing item - delete old and upload new
-            await supabase.storage.from(GALLERY_BUCKET).remove([galleryId]);
+            // Update existing item - delete old file first
+            console.log('Deleting old file:', galleryId);
+            const { error: deleteError } = await supabase.storage
+                .from(GALLERY_BUCKET)
+                .remove([galleryId]);
+            
+            if (deleteError) {
+                console.error('Error deleting old file:', deleteError);
+            }
         }
         
         if (fileInput.files[0]) {
             const file = fileInput.files[0];
             const fileExt = file.name.split('.').pop();
-            const fileName = `${encodeURIComponent(title)}___${encodeURIComponent(description)}.${fileExt}`;
+            // Add timestamp to make filename unique and avoid cache issues
+            const timestamp = Date.now();
+            const fileName = `${encodeURIComponent(title)}___${encodeURIComponent(description)}___${timestamp}.${fileExt}`;
             
-            const { error: uploadError } = await supabase.storage
+            console.log('Uploading new file:', fileName);
+            console.log('File size:', file.size, 'bytes');
+            console.log('File type:', file.type);
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
                 .from(GALLERY_BUCKET)
                 .upload(fileName, file, {
-                    cacheControl: '3600',
-                    upsert: true
+                    cacheControl: '300', // 5 minutes cache for faster updates
+                    upsert: false // Don't upsert to ensure fresh upload
                 });
             
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error('Upload error details:', uploadError);
+                throw uploadError;
+            }
+            
+            console.log('Upload successful:', uploadData);
+            
+            // Verify the upload by listing files
+            const { data: verifyData, error: verifyError } = await supabase.storage
+                .from(GALLERY_BUCKET)
+                .list('', {
+                    limit: 1,
+                    search: fileName
+                });
+            
+            if (verifyError) {
+                console.warn('Could not verify upload:', verifyError);
+                showGalleryStatus('Photo uploaded but verification failed. Please refresh to confirm.', 'info');
+            } else if (verifyData && verifyData.length > 0) {
+                console.log('Upload verified successfully:', verifyData[0]);
+                showGalleryStatus('Photo uploaded and verified successfully! It will appear on the website within 30 seconds.', 'success');
+            } else {
+                console.warn('Upload completed but file not found in verification');
+                showGalleryStatus('Photo uploaded but not found in verification. Please refresh to check.', 'info');
+            }
         }
         
         showToast(galleryId ? 'Photo updated successfully!' : 'Photo added successfully!');
         closeModal('galleryModal');
-        loadGalleryItems();
+        
+        // Wait a moment before reloading to ensure storage is updated
+        setTimeout(() => {
+            loadGalleryItems();
+        }, 500);
     } catch (error) {
         console.error('Error saving gallery item:', error);
         showToast('Error saving photo: ' + error.message, true);
@@ -328,20 +421,26 @@ document.getElementById('galleryForm').addEventListener('submit', async (e) => {
 async function editGalleryItem(fileName) {
     const fileNameParts = fileName.split('___');
     const title = fileNameParts[0] ? decodeURIComponent(fileNameParts[0]) : '';
-    const description = fileNameParts[1] ? decodeURIComponent(fileNameParts[1].split('.')[0]) : '';
+    // Handle both new format (with timestamp) and old format (without)
+    const descPart = fileNameParts[1] || '';
+    const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
+    const cleanDescription = decodeURIComponent(description);
     
     document.getElementById('galleryModalTitle').textContent = 'Edit Gallery Photo';
     document.getElementById('galleryTitle').value = title;
-    document.getElementById('galleryDescription').value = description;
+    document.getElementById('galleryDescription').value = cleanDescription;
     document.getElementById('galleryId').value = fileName;
     
-    // Show current image
+    // Show current image with cache buster
     const { data: urlData } = supabase.storage
         .from(GALLERY_BUCKET)
         .getPublicUrl(fileName);
     
+    const cacheBuster = Date.now();
+    const imageUrl = `${urlData.publicUrl}?t=${cacheBuster}`;
+    
     const preview = document.getElementById('galleryImagePreview');
-    preview.innerHTML = `<img src="${urlData.publicUrl}" alt="Current">`;
+    preview.innerHTML = `<img src="${imageUrl}" alt="Current">`;
     preview.classList.add('show');
     
     openModal('galleryModal');

@@ -21,6 +21,9 @@ async function loadGalleryFromSupabase() {
     if (!galleryGrid) return;
 
     try {
+        // Always clear hardcoded gallery items first
+        galleryGrid.innerHTML = '';
+
         // List files from gallery bucket
         const { data, error } = await supabaseClient.storage
             .from(GALLERY_BUCKET)
@@ -31,22 +34,22 @@ async function loadGalleryFromSupabase() {
 
         if (error) {
             console.error('Error loading gallery:', error);
+            galleryGrid.innerHTML = '<div class="no-items-message"><i class="fas fa-images"></i><p>Unable to load gallery. Please try again later.</p></div>';
             return;
         }
 
         if (!data || data.length === 0) {
-            return; // Keep placeholder images
+            galleryGrid.innerHTML = '<div class="no-items-message"><i class="fas fa-images"></i><p>No gallery photos uploaded yet. Photos will appear here once added through the admin panel.</p></div>';
+            return;
         }
 
         // Filter out placeholder files
         const galleryItems = data.filter(item => !item.name.includes('.emptyFolderPlaceholder'));
         
         if (galleryItems.length === 0) {
-            return; // Keep placeholder images
+            galleryGrid.innerHTML = '<div class="no-items-message"><i class="fas fa-images"></i><p>No gallery photos uploaded yet. Photos will appear here once added through the admin panel.</p></div>';
+            return;
         }
-
-        // Clear existing gallery items
-        galleryGrid.innerHTML = '';
 
         // Render gallery items from Supabase
         for (const item of galleryItems) {
@@ -54,18 +57,25 @@ async function loadGalleryFromSupabase() {
                 .from(GALLERY_BUCKET)
                 .getPublicUrl(item.name);
 
-            // Parse metadata from filename (format: title___description.ext)
+            // Add cache busting parameter
+            const cacheBuster = item.updated_at ? new Date(item.updated_at).getTime() : Date.now();
+            const imageUrl = `${urlData.publicUrl}?t=${cacheBuster}`;
+
+            // Parse metadata from filename (format: title___description___timestamp.ext or title___description.ext)
             const fileNameParts = item.name.split('___');
             const title = fileNameParts[0] ? decodeURIComponent(fileNameParts[0]) : 'Gallery Image';
-            const description = fileNameParts[1] ? decodeURIComponent(fileNameParts[1].split('.')[0]) : '';
+            // Handle both new format (with timestamp) and old format (without)
+            const descPart = fileNameParts[1] || '';
+            const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
+            const cleanDescription = description ? decodeURIComponent(description) : '';
 
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item fade-in';
             galleryItem.innerHTML = `
-                <img src="${urlData.publicUrl}" alt="${title}" loading="lazy">
+                <img src="${imageUrl}" alt="${title}" loading="lazy">
                 <div class="gallery-overlay">
                     <h3>${title}</h3>
-                    <p>${description}</p>
+                    <p>${cleanDescription}</p>
                 </div>
             `;
             galleryGrid.appendChild(galleryItem);
@@ -226,5 +236,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.supabase !== 'undefined') {
         loadGalleryFromSupabase();
         loadEventsFromSupabase();
+        
+        // Auto-refresh gallery every 30 seconds to catch new uploads
+        setInterval(() => {
+            loadGalleryFromSupabase();
+        }, 30000);
     }
 });
+
+// Expose reload function globally for manual refresh
+window.refreshGallery = function() {
+    loadGalleryFromSupabase();
+};
