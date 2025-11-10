@@ -6,6 +6,8 @@ const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 const navLinksItems = document.querySelectorAll('.nav-link');
+const joinButton = document.querySelector('.btn-join');
+const navOverlay = document.getElementById('navOverlay');
 
 // Navbar scroll effect
 window.addEventListener('scroll', () => {
@@ -16,32 +18,145 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Function to close mobile menu
+function closeMobileMenu(skipAnimation = false) {
+    if (skipAnimation) {
+        // Immediate close without animation (used after swipe animation)
+        navLinks.style.transition = 'none';
+    }
+    
+    hamburger.classList.remove('active');
+    navLinks.classList.remove('active');
+    navOverlay.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    
+    if (skipAnimation) {
+        // Reset after a brief delay to ensure the active class removal is processed
+        setTimeout(() => {
+            navLinks.style.transition = '';
+        }, 50);
+    }
+}
+
+// Function to open mobile menu
+function openMobileMenu() {
+    hamburger.classList.add('active');
+    navLinks.classList.add('active');
+    navOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
 // Mobile menu toggle
 hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active');
-    document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : 'auto';
-});
-
-// Close mobile menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (navLinks.classList.contains('active') && 
-        !navLinks.contains(e.target) && 
-        !hamburger.contains(e.target)) {
-        hamburger.classList.remove('active');
-        navLinks.classList.remove('active');
-        document.body.style.overflow = 'auto';
+    if (navLinks.classList.contains('active')) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
     }
 });
 
+// Close mobile menu when clicking overlay
+navOverlay.addEventListener('click', closeMobileMenu);
+
 // Close mobile menu when clicking on a nav link
 navLinksItems.forEach(link => {
-    link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navLinks.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    });
+    link.addEventListener('click', closeMobileMenu);
 });
+
+// Close mobile menu when clicking Join Now button
+if (joinButton) {
+    joinButton.addEventListener('click', closeMobileMenu);
+}
+
+// ==================== 
+// Swipe to Close Navigation
+// ==================== 
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+let isSwiping = false;
+let isClosing = false;
+
+navLinks.addEventListener('touchstart', (e) => {
+    if (isClosing) return;
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    isSwiping = true;
+}, { passive: true });
+
+navLinks.addEventListener('touchmove', (e) => {
+    if (!isSwiping || isClosing) return;
+    
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = Math.abs(touchEndY - touchStartY);
+    
+    // If swiping more horizontally than vertically and to the right
+    if (Math.abs(deltaX) > deltaY && deltaX > 50) {
+        // Prevent scrolling while swiping
+        e.preventDefault();
+        
+        // Visual feedback: move the menu with the swipe
+        const distance = Math.max(0, deltaX);
+        navLinks.style.transform = `translateX(${distance}px)`;
+        navLinks.style.transition = 'none';
+        navLinks.style.opacity = Math.max(0.3, 1 - (distance / 300));
+    }
+}, { passive: false });
+
+navLinks.addEventListener('touchend', (e) => {
+    if (!isSwiping || isClosing) return;
+    
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = Math.abs(touchEndY - touchStartY);
+    
+    // If swipe right more than 100px and more horizontal than vertical
+    if (deltaX > 100 && Math.abs(deltaX) > deltaY) {
+        // Start closing with animation
+        isClosing = true;
+        
+        // Add the closing animation - slide further right
+        navLinks.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 1, 1), opacity 0.25s ease';
+        navLinks.style.transform = 'translateX(100%)';
+        navLinks.style.opacity = '0';
+        
+        // Fade out overlay
+        navOverlay.style.transition = 'opacity 0.25s ease';
+        navOverlay.style.opacity = '0';
+        
+        // Close the menu after animation completes
+        setTimeout(() => {
+            // Close without triggering the CSS transition (skip animation)
+            closeMobileMenu(true);
+            
+            // Reset all inline styles
+            navLinks.style.transform = '';
+            navLinks.style.opacity = '';
+            navOverlay.style.transition = '';
+            navOverlay.style.opacity = '';
+            
+            isClosing = false;
+        }, 250);
+    } else {
+        // Reset transform if swipe wasn't enough - bounce back
+        navLinks.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+        navLinks.style.transform = '';
+        navLinks.style.opacity = '';
+        
+        setTimeout(() => {
+            navLinks.style.transition = '';
+        }, 300);
+    }
+    
+    isSwiping = false;
+}, { passive: true });
 
 // Active navigation link on scroll
 const sections = document.querySelectorAll('section[id]');
@@ -871,6 +986,11 @@ window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
         document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        
+        // Close mobile menu on resize to desktop
+        if (window.innerWidth > 768 && navLinks.classList.contains('active')) {
+            closeMobileMenu();
+        }
     }, 250);
 });
 

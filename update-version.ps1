@@ -43,28 +43,28 @@ if ($FileType -eq "css" -or $FileType -eq "all") {
     
     # Website styles
     Update-FileVersion -FilePath "website\index.html" `
-        -Pattern '(href="styles\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="styles\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "index.html" `
-        -Pattern '(href="styles\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="styles\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     # Admin styles
     Update-FileVersion -FilePath "admin\index.html" `
-        -Pattern '(href="admin\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="admin\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "admin\courses.html" `
-        -Pattern '(href="admin\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="admin\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "admin.html" `
-        -Pattern '(href="admin\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="admin\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "admin.html" `
-        -Pattern '(href="styles\.css)\?v=[^"]*(")'  `
+        -Pattern '(href="styles\.css)\?v=[^"]*(")' `
         -NewVersion $newVersion
 }
 
@@ -74,28 +74,28 @@ if ($FileType -eq "js" -or $FileType -eq "all") {
     
     # Website scripts
     Update-FileVersion -FilePath "website\index.html" `
-        -Pattern '(src="script\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="script\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "website\index.html" `
-        -Pattern '(src="supabase-loader\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="supabase-loader\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "index.html" `
-        -Pattern '(src="script\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="script\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "index.html" `
-        -Pattern '(src="supabase-loader\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="supabase-loader\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     # Admin scripts
     Update-FileVersion -FilePath "admin\index.html" `
-        -Pattern '(src="admin\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="admin\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
     
     Update-FileVersion -FilePath "admin.html" `
-        -Pattern '(src="admin\.js)\?v=[^"]*(")'  `
+        -Pattern '(src="admin\.js)\?v=[^"]*(")' `
         -NewVersion $newVersion
 }
 
