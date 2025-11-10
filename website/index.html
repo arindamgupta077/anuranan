@@ -100,7 +100,7 @@
         
         <div class="container">
             <div class="hero-content fade-in">
-                <div class="hero-badge">🎭 Since 2015</div>
+                <div class="hero-badge">🎭 Since 2014</div>
                 <h1 class="hero-title">Welcome to <span class="bengali-text">অনুরণন</span></h1>
                 <h2 class="hero-subtitle">Anuranan Recitation Training Institute</h2>
                 <p class="hero-description">
@@ -163,6 +163,7 @@
                         </div>
                     </div>
                     <p class="about-intro">
+                        <br>
                         Nestled in the heart of Kolkata, <strong>Anuranan Recitation Training Institute</strong>
                         is a celebration of Bengali culture, literature, and performing arts.
                     </p>
@@ -295,10 +296,7 @@
                 <i class="fas fa-chevron-right"></i>
             </button>
             <div class="gallery-pagination" id="galleryPagination"></div>
-            <p class="gallery-note">
-                <i class="fas fa-info-circle"></i> 
-                Gallery photos are managed through the admin panel. Upload photos to showcase your classes, performances, and events.
-            </p>
+            
         </div>
     </section>
 
@@ -581,10 +579,11 @@
                         <div class="info-text">
                             <h3>Visit Us</h3>
                             <p>
-                                Anuranan Recitation Training Institute<br>
-                                Behala, Silpara<br>
-                                Behala 14 No<br>
-                                Behala Roy Bahadur RD
+                                <ul class="address-list">
+                                    <li>Behala, Silpara (Main Branch)</li>
+                                    <li>Behala 14 NO.</li>
+                                    <li>Behala Roy Bahadur Road</li>
+                                </ul>
 
                             </p>
                         </div>
@@ -597,8 +596,7 @@
                         <div class="info-text">
                             <h3>Call Us</h3>
                             <p>
-                                +91 8910621825<br>
-                                +91 8017074226
+                                <a href="tel:+918910621825">+91-8910621825</a><br>
                             </p>
                         </div>
                     </div>
@@ -610,7 +608,7 @@
                         <div class="info-text">
                             <h3>Email Us</h3>
                             <p>
-                                anurananinstitute@gmail.com<br>
+                                <a href="mailto:anurananinstitute@gmail.com">anurananinstitute@gmail.com</a><br>
                             </p>
                         </div>
                     </div>
@@ -621,20 +619,23 @@
                         </div>
                         <div class="info-text">
                             <h3>Class Timings</h3>
-                            <p>
-                                Monday - Saturday: 4:00 PM - 8:00 PM<br>
-                                Sunday: 10:00 AM - 2:00 PM
-                            </p>
+                            <div id="contactClassSchedule" class="contact-schedule-list">
+                                <!-- Classes will be loaded dynamically from Class Details -->
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading class timings...</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="social-links">
                         <h3>Follow Us</h3>
                         <div class="social-icons">
-                            <a href="https://www.facebook.com/arc008303" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@snehasreebhore" class="social-icon"><i class="fab fa-youtube"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://www.facebook.com/arc008303" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://www.instagram.com/anuranan_recitation_training?igsh=MWtqb3M4cWUzMDI4bg==" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/@snehasreebhore" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                            <a href="https://whatsapp.com/channel/0029VbBdwh4LtOjG68w57D37" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
                 </div>
@@ -658,14 +659,9 @@
                         </div>
                         <div class="form-group">
                             <label for="course">Interested Course</label>
-                            <select id="course" name="course">
+                            <select id="course" name="course" class="course-select-dropdown">
                                 <option value="">Select a course</option>
-                                <option value="bengali">Bengali Recitation</option>
-                                <option value="english">English Recitation</option>
-                                <option value="hindi">Hindi Recitation</option>
-                                <option value="anchoring">Anchoring Classes</option>
-                                <option value="acting">Acting Workshops</option>
-                                <option value="combo">Combo Package</option>
+                                <!-- Course options will be dynamically loaded -->
                             </select>
                         </div>
                         <div class="form-group">
@@ -683,18 +679,18 @@
             <div class="map-section fade-in">
                 <h3>Find Us on Map</h3>
                 <div class="map-container">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d235850.80315098844!2d88.18249717905044!3d22.535564937441123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f882db4908f667%3A0x43e330e68f6c2cbc!2sKolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1699876543210!5m2!1sen!2sin" 
-                        width="100%" 
-                        height="400" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
+                    <iframe
+                        src="https://www.google.com/maps?q=14f+Kenaram+Ganguly+Rd,+Natore+Colony,+Paschim+Barisha,+Kolkata,+West+Bengal+700008&output=embed"
+                        width="100%"
+                        height="400"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade">
                     </iframe>
                     <p class="map-note">
                         <i class="fas fa-info-circle"></i> 
-                        Please update the map embed code with your exact institute location.
+                        14f, Kenaram Ganguly Rd, Natore Colony, Paschim Barisha, Kolkata, West Bengal 700008
                     </p>
                 </div>
             </div>
@@ -739,26 +735,22 @@
 
                 <div class="footer-col">
                     <h4>Our Courses</h4>
-                    <ul class="footer-links">
-                        <li><a href="#courses">Bengali Recitation</a></li>
-                        <li><a href="#courses">English Recitation</a></li>
-                        <li><a href="#courses">Hindi Recitation</a></li>
-                        <li><a href="#courses">Anchoring Classes</a></li>
-                        <li><a href="#courses">Acting Workshops</a></li>
+                    <ul class="footer-links footer-courses-list">
+                        <!-- Courses will be dynamically loaded -->
                     </ul>
                 </div>
 
                 <div class="footer-col">
                     <h4>Connect With Us</h4>
                     <div class="footer-social">
-                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.facebook.com/arc008303" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/anuranan_recitation_training?igsh=MWtqb3M4cWUzMDI4bg==" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@snehasreebhore" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                        <a href="https://whatsapp.com/channel/0029VbBdwh4LtOjG68w57D37" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
                     </div>
                     <p class="footer-contact">
-                        <i class="fas fa-phone"></i> +91 [Your Number]<br>
-                        <i class="fas fa-envelope"></i> info@anuranan.in
+                        <i class="fas fa-phone"></i> <a href="tel:+918910621825">+91-8910621825</a><br>
+                        <i class="fas fa-envelope"></i> <a href="mailto:anurananinstitute@gmail.com">anurananinstitute@gmail.com</a>
                     </p>
                 </div>
             </div>
@@ -774,6 +766,46 @@
     <button id="scrollTop" class="scroll-top">
         <i class="fas fa-arrow-up"></i>
     </button>
+
+    <!-- Contact Form Modal -->
+    <div id="contactModal" class="contact-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <form class="contact-form modal-form" id="modalContactForm">
+                <h3>Send us a Message</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="modal-name">Full Name *</label>
+                        <input type="text" id="modal-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-phone">Phone Number *</label>
+                        <input type="tel" id="modal-phone" name="phone" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modal-email">Email Address *</label>
+                    <input type="email" id="modal-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-course">Interested Course</label>
+                    <select id="modal-course" name="course" class="course-select-dropdown modal-course-dropdown">
+                        <option value="">Select a course</option>
+                        <!-- Course options will be dynamically loaded -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modal-message">Your Message</label>
+                    <textarea id="modal-message" name="message" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script src="script.js"></script>
     <script src="supabase-loader.js?v=3.0"></script>

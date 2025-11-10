@@ -323,6 +323,71 @@ contactForm.addEventListener('submit', async (e) => {
 });
 
 // ==================== 
+// Modal Contact Form Handler
+// ==================== 
+
+const modalContactForm = document.getElementById('modalContactForm');
+
+if (modalContactForm) {
+    modalContactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Get the submit button
+        const submitButton = modalContactForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        
+        // Disable button and show loading state
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        try {
+            // Get form data
+            const formData = {
+                name: document.getElementById('modal-name').value,
+                phone: document.getElementById('modal-phone').value,
+                email: document.getElementById('modal-email').value,
+                course: document.getElementById('modal-course').value || null,
+                message: document.getElementById('modal-message').value || null
+            };
+            
+            // Check if Supabase is available
+            if (typeof supabaseClient === 'undefined') {
+                throw new Error('Database connection not available. Please try again later.');
+            }
+            
+            // Insert data into Supabase
+            const { data, error } = await supabaseClient
+                .from('contact_messages')
+                .insert([formData]);
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                throw new Error('Failed to send message. Please try again.');
+            }
+            
+            // Show success message
+            showNotification('Thank you! Your message has been sent successfully. We will contact you soon.', 'success');
+            
+            // Reset form
+            modalContactForm.reset();
+            
+            // Close modal after short delay
+            setTimeout(() => {
+                closeContactModal();
+            }, 1500);
+            
+        } catch (error) {
+            console.error('Form submission error:', error);
+            showNotification(error.message || 'Failed to send message. Please try again.', 'error');
+        } finally {
+            // Re-enable button and restore original text
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
+    });
+}
+
+// ==================== 
 // Notification System
 // ==================== 
 
@@ -880,14 +945,19 @@ async function loadClassDetails() {
 
 function displayClassDetails(classes) {
     const container = document.getElementById('classScheduleList');
+    const contactContainer = document.getElementById('contactClassSchedule');
     
     if (classes.length === 0) {
-        container.innerHTML = `
+        const noClassesHTML = `
             <div class="no-classes">
                 <i class="fas fa-info-circle"></i>
                 <p>No class schedules available at the moment.</p>
             </div>
         `;
+        container.innerHTML = noClassesHTML;
+        if (contactContainer) {
+            contactContainer.innerHTML = `<p>No class schedules available at the moment.</p>`;
+        }
         return;
     }
     
@@ -902,7 +972,8 @@ function displayClassDetails(classes) {
         groupedClasses[classItem.day].push(classItem);
     });
     
-    container.innerHTML = daysOrder
+    // Full schedule HTML for Class Details section
+    const fullScheduleHTML = daysOrder
         .filter(day => groupedClasses[day])
         .map(day => {
             const dayClasses = groupedClasses[day];
@@ -929,6 +1000,21 @@ function displayClassDetails(classes) {
                 </div>
             `;
         }).join('');
+    
+    container.innerHTML = fullScheduleHTML;
+    
+    // Simplified schedule HTML for Contact section
+    if (contactContainer) {
+        const contactScheduleHTML = daysOrder
+            .filter(day => groupedClasses[day])
+            .map(day => {
+                const dayClasses = groupedClasses[day];
+                const timings = dayClasses.map(c => c.timings).join(', ');
+                return `<p><strong>${day}:</strong> ${timings}</p>`;
+            }).join('');
+        
+        contactContainer.innerHTML = contactScheduleHTML;
+    }
 }
 
 // Load class details when page loads
@@ -1018,7 +1104,7 @@ function renderCourses(courses) {
                         <li><i class="fas fa-check"></i> ${feature}</li>
                     `).join('')}
                 </ul>
-                <a href="#contact" class="${btnClass}">${buttonText}</a>
+                <button class="${btnClass} enroll-btn" data-course="${course.title}">${buttonText}</button>
             </div>
         `;
     }).join('');
@@ -1031,7 +1117,126 @@ function renderCourses(courses) {
             card.style.transform = 'translateY(0)';
         }, index * 100);
     });
+
+    // Update footer courses
+    renderFooterCourses(courses);
+    
+    // Update contact form course dropdown
+    renderCourseDropdown(courses);
+    
+    // Add event listeners to enroll buttons
+    addEnrollButtonListeners();
 }
+
+function renderFooterCourses(courses) {
+    const footerCoursesList = document.querySelector('.footer-courses-list');
+    if (!footerCoursesList) return;
+
+    footerCoursesList.innerHTML = courses.map(course => `
+        <li><a href="#courses">${course.title}</a></li>
+    `).join('');
+}
+
+function renderCourseDropdown(courses) {
+    const courseDropdowns = document.querySelectorAll('.course-select-dropdown');
+    if (!courseDropdowns.length) return;
+
+    courseDropdowns.forEach(courseDropdown => {
+        // Get the default "Select a course" option
+        const defaultOption = courseDropdown.querySelector('option[value=""]');
+        
+        // Clear all options
+        courseDropdown.innerHTML = '';
+        
+        // Add back the default option
+        if (defaultOption) {
+            courseDropdown.appendChild(defaultOption);
+        } else {
+            const newDefaultOption = document.createElement('option');
+            newDefaultOption.value = '';
+            newDefaultOption.textContent = 'Select a course';
+            courseDropdown.appendChild(newDefaultOption);
+        }
+        
+        // Add course options
+        courses.forEach(course => {
+            const option = document.createElement('option');
+            option.value = course.title.toLowerCase().replace(/\s+/g, '-');
+            option.textContent = course.title;
+            courseDropdown.appendChild(option);
+        });
+    });
+}
+
+// ==================== 
+// Contact Form Modal Functionality
+// ==================== 
+
+function addEnrollButtonListeners() {
+    const enrollButtons = document.querySelectorAll('.enroll-btn');
+    enrollButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const courseName = button.getAttribute('data-course');
+            openContactModal(courseName);
+        });
+    });
+}
+
+function openContactModal(selectedCourse = '') {
+    const modal = document.getElementById('contactModal');
+    const modalCourseDropdown = document.getElementById('modal-course');
+    
+    if (!modal) return;
+    
+    // Set the selected course if provided
+    if (selectedCourse && modalCourseDropdown) {
+        const courseValue = selectedCourse.toLowerCase().replace(/\s+/g, '-');
+        const option = modalCourseDropdown.querySelector(`option[value="${courseValue}"]`);
+        if (option) {
+            modalCourseDropdown.value = courseValue;
+        }
+    }
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (!modal) return;
+    
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Modal event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('contactModal');
+    const closeBtn = document.getElementById('modalClose');
+    
+    // Close button
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeContactModal);
+    }
+    
+    // Click outside modal to close
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeContactModal();
+            }
+        });
+    }
+    
+    // ESC key to close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            closeContactModal();
+        }
+    });
+});
 
 // Load courses when page loads
 document.addEventListener('DOMContentLoaded', () => {

@@ -94,7 +94,7 @@
                     <i class="fas fa-calendar-alt"></i>
                     <span>Events & Programs</span>
                 </a>
-                <a href="courses.html" class="menu-item">
+                <a href="#courses-management" class="menu-item" data-section="courses">
                     <i class="fas fa-book"></i>
                     <span>Course Management</span>
                 </a>
@@ -149,6 +149,23 @@
                     <!-- Event items will be loaded here -->
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i> Loading events...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Course Management Section -->
+            <section id="courses-management" class="management-section">
+                <div class="section-header-admin">
+                    <h2><i class="fas fa-book"></i> Course Management</h2>
+                    <button class="btn-add" id="addCourseBtn">
+                        <i class="fas fa-plus"></i> Add Course
+                    </button>
+                </div>
+
+                <div class="items-grid" id="coursesItemsGrid">
+                    <!-- Course items will be loaded here -->
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading courses...
                     </div>
                 </div>
             </section>
@@ -254,93 +271,96 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="eventForm" class="modal-form">
-                <input type="hidden" id="eventId">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="eventDay">Day *</label>
-                        <input type="number" id="eventDay" required min="1" max="31" placeholder="15">
+            <div class="modal-body">
+                <form id="eventForm" class="modal-form">
+                    <input type="hidden" id="eventId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDay">Day *</label>
+                            <input type="number" id="eventDay" required min="1" max="31" placeholder="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventMonth">Month *</label>
+                            <select id="eventMonth" required>
+                                <option value="">Select Month</option>
+                                <option value="JAN">January</option>
+                                <option value="FEB">February</option>
+                                <option value="MAR">March</option>
+                                <option value="APR">April</option>
+                                <option value="MAY">May</option>
+                                <option value="JUN">June</option>
+                                <option value="JUL">July</option>
+                                <option value="AUG">August</option>
+                                <option value="SEP">September</option>
+                                <option value="OCT">October</option>
+                                <option value="NOV">November</option>
+                                <option value="DEC">December</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="eventMonth">Month *</label>
-                        <select id="eventMonth" required>
-                            <option value="">Select Month</option>
-                            <option value="JAN">January</option>
-                            <option value="FEB">February</option>
-                            <option value="MAR">March</option>
-                            <option value="APR">April</option>
-                            <option value="MAY">May</option>
-                            <option value="JUN">June</option>
-                            <option value="JUL">July</option>
-                            <option value="AUG">August</option>
-                            <option value="SEP">September</option>
-                            <option value="OCT">October</option>
-                            <option value="NOV">November</option>
-                            <option value="DEC">December</option>
+                        <label for="eventCategory">Category *</label>
+                        <select id="eventCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Cultural Program">Cultural Program</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Celebration">Celebration</option>
+                            <option value="Competition">Competition</option>
+                            <option value="Special Event">Special Event</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="eventCategory">Category *</label>
-                    <select id="eventCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="Cultural Program">Cultural Program</option>
-                        <option value="Workshop">Workshop</option>
-                        <option value="Celebration">Celebration</option>
-                        <option value="Competition">Competition</option>
-                        <option value="Special Event">Special Event</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="eventTitle">Event Title *</label>
-                    <input type="text" id="eventTitle" required placeholder="e.g., Annual Recitation Competition">
-                </div>
-
-                <div class="form-group">
-                    <label for="eventDescription">Description *</label>
-                    <textarea id="eventDescription" required rows="4" placeholder="Describe the event in detail..."></textarea>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
-                        <label for="eventTime">Time *</label>
-                        <input type="text" id="eventTime" required placeholder="e.g., 5:00 PM - 8:00 PM">
+                        <label for="eventTitle">Event Title *</label>
+                        <input type="text" id="eventTitle" required placeholder="e.g., Annual Recitation Competition">
                     </div>
 
                     <div class="form-group">
-                        <label for="eventLocation">Location *</label>
-                        <input type="text" id="eventLocation" required placeholder="e.g., Main Auditorium">
+                        <label for="eventDescription">Description *</label>
+                        <textarea id="eventDescription" required rows="4" placeholder="Describe the event in detail..."></textarea>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="eventPhoto">Event Photo</label>
-                    <input type="file" id="eventPhoto" accept="image/*">
-                    <small style="display: block; margin-top: 5px; color: #666;">
-                        <i class="fas fa-info-circle"></i> Optional. Upload a photo for this event (JPG, PNG, etc.)
-                    </small>
-                    <div id="eventPhotoPreview" style="margin-top: 10px; display: none;">
-                        <img id="eventPhotoPreviewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover;" alt="Event photo preview">
-                        <button type="button" id="removeEventPhoto" class="btn-delete-item" style="margin-top: 10px; padding: 5px 10px; font-size: 12px;">
-                            <i class="fas fa-trash"></i> Remove Photo
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTime">Time *</label>
+                            <input type="text" id="eventTime" required placeholder="e.g., 5:00 PM - 8:00 PM">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventLocation">Location *</label>
+                            <input type="text" id="eventLocation" required placeholder="e.g., Main Auditorium">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventPhoto">Event Photo</label>
+                        <input type="file" id="eventPhoto" accept="image/*">
+                        <small style="display: block; margin-top: 5px; color: #666;">
+                            <i class="fas fa-info-circle"></i> Optional. Upload a photo for this event (JPG, PNG, etc.)
+                        </small>
+                        <div id="eventPhotoPreview" style="margin-top: 10px; display: none;">
+                            <img id="eventPhotoPreviewImg" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover;" alt="Event photo preview">
+                            <button type="button" id="removeEventPhoto" class="btn-delete-item" style="margin-top: 10px; padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Remove Photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-modal="eventModal">Cancel</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> Save Event
                         </button>
                     </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" data-modal="eventModal">Cancel</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i> Save Event
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Class Details Modal -->
     <!-- Class Details Modal -->
     <div id="classModal" class="modal">
         <div class="modal-content">
@@ -350,47 +370,159 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="classForm" class="modal-form">
-                <input type="hidden" id="classId">
-                
-                <div class="form-group">
-                    <label for="classSubject">Subject *</label>
-                    <input type="text" id="classSubject" required placeholder="e.g., Rabindra Sangeet, Tabla, Classical Dance">
-                </div>
-
-                <div class="form-group">
-                    <label for="classBranch">Branch *</label>
-                    <input type="text" id="classBranch" required placeholder="e.g., Saltlake Branch, Park Street Branch">
-                </div>
-
-                <div class="form-row">
+            <div class="modal-body">
+                <form id="classForm" class="modal-form">
+                    <input type="hidden" id="classId">
+                    
                     <div class="form-group">
-                        <label for="classDay">Day *</label>
-                        <select id="classDay" required>
-                            <option value="">Select Day</option>
-                            <option value="Sunday">Sunday</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                        </select>
+                        <label for="classSubject">Subject *</label>
+                        <input type="text" id="classSubject" required placeholder="e.g., Rabindra Sangeet, Tabla, Classical Dance">
                     </div>
 
                     <div class="form-group">
-                        <label for="classTimings">Timings *</label>
-                        <input type="text" id="classTimings" required placeholder="e.g., 3:00 PM - 8:00 PM">
+                        <label for="classBranch">Branch *</label>
+                        <input type="text" id="classBranch" required placeholder="e.g., Saltlake Branch, Park Street Branch">
                     </div>
-                </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" data-modal="classModal">Cancel</button>
-                    <button type="submit" class="btn-save">
-                        <i class="fas fa-save"></i> Save Class
-                    </button>
-                </div>
-            </form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="classDay">Day *</label>
+                            <select id="classDay" required>
+                                <option value="">Select Day</option>
+                                <option value="Sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="classTimings">Timings *</label>
+                            <input type="text" id="classTimings" required placeholder="e.g., 3:00 PM - 8:00 PM">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-modal="classModal">Cancel</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> Save Class
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Modal -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="courseModalTitle">Add Course</h3>
+                <button class="modal-close" data-modal="courseModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="courseForm" class="modal-form">
+                    <input type="hidden" id="courseId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseTitle">Course Title *</label>
+                            <input type="text" id="courseTitle" required placeholder="e.g., Bengali Recitation">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="courseIcon">Icon Class *</label>
+                            <input type="text" id="courseIcon" required placeholder="e.g., fas fa-book-open">
+                            <div id="iconPreview" style="font-size: 32px; color: var(--primary-blue); margin-top: 10px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseDescription">Description *</label>
+                        <textarea id="courseDescription" required placeholder="Enter course description..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseBadge">Badge Text (Optional)</label>
+                            <input type="text" id="courseBadge" placeholder="e.g., Popular, New, Save 30%">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="badgeType">Badge Type</label>
+                            <select id="badgeType">
+                                <option value="popular">Popular (Yellow)</option>
+                                <option value="new">New (Green)</option>
+                                <option value="discount">Discount (Red)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="buttonText">Button Text</label>
+                            <input type="text" id="buttonText" placeholder="e.g., Enroll Now" value="Enroll Now">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="displayOrder">Display Order</label>
+                            <input type="number" id="displayOrder" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Course Features *</label>
+                        <div id="featuresList" style="margin-bottom: 10px;">
+                            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <input type="text" class="feature-input" placeholder="Enter a feature..." required 
+                                       style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)"
+                                        style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="addFeatureBtn" 
+                                style="background: var(--primary-blue); color: white; border: none; padding: 10px 20px; 
+                                       border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+                            <i class="fas fa-plus"></i> Add Feature
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="isFeatured" style="width: auto;">
+                                <span><i class="fas fa-star"></i> Mark as Featured Course</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="featuredText">Featured Badge Text</label>
+                            <input type="text" id="featuredText" placeholder="e.g., Special Offer">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="isActive" checked style="width: auto;">
+                            <span><i class="fas fa-eye"></i> Active (Visible on website)</span>
+                        </label>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-modal="courseModal">Cancel</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> <span id="submitBtnText">Save Course</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

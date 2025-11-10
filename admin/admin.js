@@ -40,6 +40,7 @@ async function checkAuth() {
         adminDashboard.style.display = 'flex';
         loadGalleryItems();
         loadEventItems();
+        loadCourses();
         loadClassItems();
         loadContactMessages();
     } else {
@@ -1240,6 +1241,374 @@ document.addEventListener('DOMContentLoaded', () => {
 window.toggleReadStatus = toggleReadStatus;
 window.deleteMessage = deleteMessage;
 window.loadContactMessages = loadContactMessages;
+
+// ==================== 
+// Course Management
+// ==================== 
+
+let currentCourseId = null;
+
+// Add Course button
+const addCourseBtn = document.getElementById('addCourseBtn');
+if (addCourseBtn) {
+    addCourseBtn.addEventListener('click', () => {
+        currentCourseId = null;
+        document.getElementById('courseModalTitle').textContent = 'Add Course';
+        document.getElementById('submitBtnText').textContent = 'Save Course';
+        document.getElementById('courseForm').reset();
+        document.getElementById('courseId').value = '';
+        document.getElementById('iconPreview').innerHTML = '';
+        
+        // Reset features list
+        const featuresList = document.getElementById('featuresList');
+        featuresList.innerHTML = `
+            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" class="feature-input" placeholder="Enter a feature..." required 
+                       style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)"
+                        style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        openModal('courseModal');
+    });
+}
+
+// Icon preview
+const courseIconInput = document.getElementById('courseIcon');
+if (courseIconInput) {
+    courseIconInput.addEventListener('input', (e) => {
+        const preview = document.getElementById('iconPreview');
+        preview.innerHTML = `<i class="${e.target.value}"></i>`;
+    });
+}
+
+// Add feature button
+const addFeatureBtn = document.getElementById('addFeatureBtn');
+if (addFeatureBtn) {
+    addFeatureBtn.addEventListener('click', () => {
+        const featuresList = document.getElementById('featuresList');
+        const newFeature = document.createElement('div');
+        newFeature.className = 'feature-item';
+        newFeature.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+        newFeature.innerHTML = `
+            <input type="text" class="feature-input" placeholder="Enter a feature..." required 
+                   style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <button type="button" class="btn-remove-feature" onclick="removeFeature(this)"
+                    style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        featuresList.appendChild(newFeature);
+    });
+}
+
+// Remove feature function
+function removeFeature(btn) {
+    const featuresList = document.getElementById('featuresList');
+    if (featuresList.children.length > 1) {
+        btn.parentElement.remove();
+    } else {
+        alert('At least one feature is required!');
+    }
+}
+
+// Load courses
+async function loadCourses() {
+    const grid = document.getElementById('coursesItemsGrid');
+    grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading courses...</div>';
+
+    try {
+        const { data: courses, error } = await supabase
+            .from('courses')
+            .select('*')
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+
+        if (!courses || courses.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <p>No courses found</p>
+                    <small>Click "Add Course" to create your first course</small>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = courses.map(course => {
+            const features = Array.isArray(course.features) ? course.features : [];
+            const badgeHtml = course.badge ? 
+                `<span class="badge ${course.badge_type || 'popular'}">
+                    <i class="fas fa-tag"></i> ${course.badge}
+                </span>` : '';
+            const featuredBadge = course.is_featured ? 
+                `<span class="badge featured">
+                    <i class="fas fa-star"></i> Featured
+                </span>` : '';
+            
+            return `
+                <div class="course-card">
+                    <!-- Course Header with Gradient -->
+                    <div class="course-card-header">
+                        <div class="course-header-content">
+                            <div class="course-icon-wrapper">
+                                <i class="${course.icon}"></i>
+                            </div>
+                            <div class="course-title-wrapper">
+                                <h3>${escapeHtml(course.title)}</h3>
+                                <div class="course-order-info">
+                                    <i class="fas fa-sort-numeric-down"></i>
+                                    Order: ${course.display_order}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons - Top Right -->
+                        <div class="course-actions-top">
+                            <button class="btn-action-icon" onclick="editCourse('${course.id}')" title="Edit Course">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action-icon ${course.is_active ? '' : 'btn-toggle-off'}" 
+                                    onclick="toggleCourse('${course.id}', ${!course.is_active})"
+                                    title="${course.is_active ? 'Hide Course' : 'Show Course'}">
+                                <i class="fas fa-${course.is_active ? 'eye' : 'eye-slash'}"></i>
+                            </button>
+                            <button class="btn-action-icon btn-delete-icon" 
+                                    onclick="deleteCourse('${course.id}', '${escapeHtml(course.title)}')"
+                                    title="Delete Course">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges Section -->
+                    ${(badgeHtml || featuredBadge || course.is_active !== undefined) ? `
+                    <div class="course-badges-section">
+                        <div class="course-badges-flex">
+                            ${badgeHtml}
+                            ${featuredBadge}
+                            <span class="badge ${course.is_active ? 'success' : 'warning'}">
+                                <i class="fas fa-${course.is_active ? 'check-circle' : 'exclamation-circle'}"></i>
+                                ${course.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Description -->
+                    <div class="course-description-section">
+                        <p class="course-description">${escapeHtml(course.description)}</p>
+                    </div>
+                    
+                    <!-- Features -->
+                    ${features.length > 0 ? `
+                    <div class="course-features-section">
+                        <div class="course-features-title">
+                            <i class="fas fa-list-check"></i>
+                            Key Features
+                        </div>
+                        <ul class="features-list">
+                            ${features.slice(0, 4).map(f => `<li><i class="fas fa-check"></i> ${escapeHtml(f)}</li>`).join('')}
+                            ${features.length > 4 ? `<li><i class="fas fa-ellipsis-h"></i> +${features.length - 4} more features</li>` : ''}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Footer Meta -->
+                    <div class="course-meta-footer">
+                        <div class="course-meta-info">
+                            <div class="meta-item">
+                                <i class="fas fa-mouse-pointer"></i>
+                                Button: <strong>"${escapeHtml(course.button_text || 'Enroll Now')}"</strong>
+                            </div>
+                            ${course.is_featured && course.featured_text ? `
+                            <div class="meta-item">
+                                <i class="fas fa-award"></i>
+                                Featured: <strong>"${escapeHtml(course.featured_text)}"</strong>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Error loading courses:', error);
+        grid.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Error loading courses</p>
+                <small>${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+// Edit course
+async function editCourse(courseId) {
+    try {
+        const { data: course, error } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('id', courseId)
+            .single();
+
+        if (error) throw error;
+
+        currentCourseId = courseId;
+        
+        // Populate form
+        document.getElementById('courseId').value = course.id;
+        document.getElementById('courseTitle').value = course.title;
+        document.getElementById('courseDescription').value = course.description;
+        document.getElementById('courseIcon').value = course.icon;
+        document.getElementById('courseBadge').value = course.badge || '';
+        document.getElementById('badgeType').value = course.badge_type || 'popular';
+        document.getElementById('buttonText').value = course.button_text || 'Enroll Now';
+        document.getElementById('displayOrder').value = course.display_order || 0;
+        document.getElementById('isFeatured').checked = course.is_featured || false;
+        document.getElementById('featuredText').value = course.featured_text || '';
+        document.getElementById('isActive').checked = course.is_active;
+
+        // Update icon preview
+        document.getElementById('iconPreview').innerHTML = `<i class="${course.icon}"></i>`;
+
+        // Populate features
+        const featuresList = document.getElementById('featuresList');
+        const features = Array.isArray(course.features) ? course.features : [];
+        featuresList.innerHTML = features.map(feature => `
+            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" class="feature-input" value="${escapeHtml(feature)}" required 
+                       style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)"
+                        style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+
+        // Update modal title
+        document.getElementById('courseModalTitle').textContent = 'Edit Course';
+        document.getElementById('submitBtnText').textContent = 'Update Course';
+
+        // Open modal
+        openModal('courseModal');
+    } catch (error) {
+        console.error('Error loading course:', error);
+        alert('Error loading course details: ' + error.message);
+    }
+}
+
+// Toggle course
+async function toggleCourse(courseId, newStatus) {
+    try {
+        const { error } = await supabase
+            .from('courses')
+            .update({ is_active: newStatus })
+            .eq('id', courseId);
+
+        if (error) throw error;
+
+        loadCourses();
+    } catch (error) {
+        console.error('Error toggling course:', error);
+        alert('Error updating course status: ' + error.message);
+    }
+}
+
+// Delete course
+async function deleteCourse(courseId, courseTitle) {
+    if (!confirm(`Are you sure you want to delete "${courseTitle}"? This action cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('courses')
+            .delete()
+            .eq('id', courseId);
+
+        if (error) throw error;
+
+        alert('Course deleted successfully!');
+        loadCourses();
+    } catch (error) {
+        console.error('Error deleting course:', error);
+        alert('Error deleting course: ' + error.message);
+    }
+}
+
+// Course form submit
+const courseForm = document.getElementById('courseForm');
+if (courseForm) {
+    courseForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Collect features
+        const featureInputs = document.querySelectorAll('.feature-input');
+        const features = Array.from(featureInputs)
+            .map(input => input.value.trim())
+            .filter(value => value !== '');
+
+        if (features.length === 0) {
+            alert('Please add at least one feature!');
+            return;
+        }
+
+        const courseData = {
+            title: document.getElementById('courseTitle').value.trim(),
+            description: document.getElementById('courseDescription').value.trim(),
+            icon: document.getElementById('courseIcon').value.trim(),
+            badge: document.getElementById('courseBadge').value.trim() || null,
+            badge_type: document.getElementById('badgeType').value,
+            features: features,
+            is_featured: document.getElementById('isFeatured').checked,
+            featured_text: document.getElementById('featuredText').value.trim() || null,
+            button_text: document.getElementById('buttonText').value.trim() || 'Enroll Now',
+            display_order: parseInt(document.getElementById('displayOrder').value) || 0,
+            is_active: document.getElementById('isActive').checked
+        };
+
+        try {
+            const courseId = document.getElementById('courseId').value;
+            let result;
+
+            if (courseId) {
+                // Update existing course
+                result = await supabase
+                    .from('courses')
+                    .update(courseData)
+                    .eq('id', courseId);
+            } else {
+                // Insert new course
+                result = await supabase
+                    .from('courses')
+                    .insert([courseData]);
+            }
+
+            if (result.error) throw result.error;
+
+            alert(courseId ? 'Course updated successfully!' : 'Course added successfully!');
+            closeModal('courseModal');
+            loadCourses();
+        } catch (error) {
+            console.error('Error saving course:', error);
+            alert('Error saving course: ' + error.message);
+        }
+    });
+}
+
+// Make course functions globally available
+window.removeFeature = removeFeature;
+window.editCourse = editCourse;
+window.toggleCourse = toggleCourse;
+window.deleteCourse = deleteCourse;
+window.loadCourses = loadCourses;
 
 // ==================== 
 // Initialize
