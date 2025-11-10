@@ -1,34 +1,47 @@
 {
   "name": "Anuranan Admin Panel",
-  "short_name": "Anuranan Admin",
+  "short_name": "Admin Panel",
   "description": "Admin panel for Anuranan Recitation Training Institute",
-  "start_url": "/admin/index.html",
+  "start_url": "./index.html",
+  "id": "/admin/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1B4B8F",
   "orientation": "any",
   "icons": [
     {
-      "src": "public/admin-logo-192x192.png",
+      "src": "./public/admin-logo-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "public/admin-logo-192x192.png",
+      "src": "./public/admin-logo-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "public/admin-logo-512x512.png",
+      "src": "./public/admin-logo-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "public/admin-logo-512x512.png",
+      "src": "./public/admin-logo-512x512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./public/admin-logo-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./public/admin-logo-1024x1024.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "maskable"
     }

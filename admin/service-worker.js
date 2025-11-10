@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anuranan-admin-v2';
+const CACHE_NAME = 'anuranan-admin-v3';
 const urlsToCache = [
   '/admin/',
   '/admin/index.html',
@@ -7,7 +7,8 @@ const urlsToCache = [
   '/admin/admin.js',
   '/admin/supabase-loader.js',
   '/admin/public/admin-logo-192x192.png',
-  '/admin/public/admin-logo-512x512.png'
+  '/admin/public/admin-logo-512x512.png',
+  '/admin/public/admin-logo-1024x1024.png'
 ];
 
 // Install event - cache resources
