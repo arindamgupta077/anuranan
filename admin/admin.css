@@ -114,6 +114,20 @@ textarea {
     box-shadow: 0 4px 15px rgba(253, 184, 19, 0.3);
 }
 
+/* New logo image styling */
+.admin-logo .logo-icon-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 15px rgba(253, 184, 19, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.admin-logo .logo-icon-img:hover {
+    transform: scale(1.05);
+}
+
 .admin-logo .logo-text h1 {
     font-size: 32px;
     font-family: var(--font-bengali);
@@ -172,7 +186,7 @@ textarea {
     border: none;
     cursor: pointer;
     padding: 4px;
-    z-index: 1002;
+    z-index: 1001;
     position: relative;
 }
 
@@ -2672,8 +2686,13 @@ textarea {
         font-size: 20px;
     }
     
+    .admin-logo .logo-icon-img {
+        width: 40px;
+        height: 40px;
+    }
+    
     .admin-logo .logo-text h1 {
-        font-size: 18px;
+        font-size: 20px; /* Reduced from 28px to fit "Anuranan Admin Panel" */
     }
     
     .admin-logo .logo-text p {
@@ -2684,7 +2703,6 @@ textarea {
     .hamburger-menu {
         display: flex;
         order: 3;
-        z-index: 1002;
     }
     
     /* Hide admin actions by default on mobile */
@@ -2697,13 +2715,16 @@ textarea {
         background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
         flex-direction: column;
         gap: 0;
-        padding: 1rem 0;
+        padding: 1rem 0 2rem 0; /* Added bottom padding */
         box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
         transition: right 0.3s ease;
-        z-index: 1001;
+        z-index: 1001; /* Higher than navbar (1000) */
         height: calc(100vh - 60px);
+        max-height: calc(100vh - 60px);
         overflow-y: auto;
+        overflow-x: hidden;
         align-items: stretch;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
     
     .admin-actions.mobile-menu-open {
@@ -2723,6 +2744,7 @@ textarea {
         border-radius: 0;
         background: transparent;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0; /* Prevent buttons from shrinking */
     }
     
     .btn-view-site:hover,
@@ -2745,13 +2767,17 @@ textarea {
     
     .btn-logout {
         border-bottom: none;
-        margin-top: auto;
-        background: rgba(253, 184, 19, 0.2);
+        background: var(--primary-yellow) !important;
+        color: var(--primary-blue) !important;
+        border-top: 2px solid rgba(255, 255, 255, 0.3);
+        margin-top: 1rem; /* Add spacing above logout */
+        font-weight: 600;
     }
     
     .btn-logout:hover {
-        background: var(--primary-yellow);
-        color: var(--primary-blue);
+        background: var(--accent-yellow) !important;
+        color: var(--dark-blue) !important;
+        box-shadow: 0 2px 8px rgba(253, 184, 19, 0.4);
     }
     
     /* Mobile menu overlay backdrop */
@@ -2763,7 +2789,7 @@ textarea {
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
+        z-index: 1000; /* Same as navbar, appears behind menu */
         animation: fadeIn 0.3s ease;
     }
     
@@ -2775,6 +2801,7 @@ textarea {
     /* Login Section */
     .login-section {
         padding: 1rem 1.25rem 3rem 1.25rem;
+        align-items: center;
     }
     
     .login-card {
@@ -3389,8 +3416,13 @@ textarea {
         font-size: 18px;
     }
     
+    .admin-logo .logo-icon-img {
+        width: 36px;
+        height: 36px;
+    }
+    
     .admin-logo .logo-text h1 {
-        font-size: 16px;
+        font-size: 18px; /* Reduced from 26px to fit better */
     }
     
     .admin-logo .logo-text p {
@@ -3403,9 +3435,17 @@ textarea {
         font-size: 12px;
     }
     
+    /* Override for mobile menu */
+    .admin-actions .btn-view-site,
+    .admin-actions .btn-logout {
+        padding: 1rem 1.2rem;
+        font-size: 14px;
+    }
+    
     /* Login */
     .login-section {
         padding: 0.75rem 1rem 2.5rem 1rem;
+        align-items: center;
     }
     
     .login-card {
@@ -3651,8 +3691,13 @@ textarea {
         font-size: 16px;
     }
     
+    .admin-logo .logo-icon-img {
+        width: 32px;
+        height: 32px;
+    }
+    
     .admin-logo .logo-text h1 {
-        font-size: 14px;
+        font-size: 16px; /* Reduced from 24px to fit better */
     }
     
     .admin-logo .logo-text p {
@@ -3746,6 +3791,7 @@ textarea {
     .login-section {
         padding: 1rem;
         min-height: auto;
+        align-items: center;
     }
     
     .login-card {

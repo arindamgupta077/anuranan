@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Logo Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .logo-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 12px 24px;
+            background: #1B4B8F;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #FDB813;
+            color: #1B4B8F;
+            transform: translateY(-2px);
+        }
+        h1 {
+            color: #1B4B8F;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Logo Generator</h1>
+    <p>Generate your admin logo in different sizes</p>
+    
+    <div class="logo-container">
+        <canvas id="logoCanvas" width="512" height="512"></canvas>
+    </div>
+    
+    <div class="buttons">
+        <button onclick="downloadLogo(192)">Download 192x192</button>
+        <button onclick="downloadLogo(512)">Download 512x512</button>
+        <button onclick="downloadLogo(1024)">Download 1024x1024</button>
+    </div>
+
+    <script>
+        function drawLogo(size) {
+            const canvas = document.getElementById('logoCanvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size * 0.475;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Draw background circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#0F2A4F';
+            ctx.fill();
+            
+            // Draw yellow border
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#FDB813';
+            ctx.lineWidth = size * 0.04;
+            ctx.stroke();
+            
+            // Draw inner blue circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.915, 0, 2 * Math.PI);
+            ctx.fillStyle = '#1B4B8F';
+            ctx.fill();
+            
+            // Draw text
+            ctx.fillStyle = '#FDB813';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = `bold ${size * 0.21}px Arial, sans-serif`;
+            
+            // ADMIN text
+            ctx.fillText('ADMIN', centerX, centerY - size * 0.08);
+            
+            // PANEL text
+            ctx.fillText('PANEL', centerX, centerY + size * 0.12);
+        }
+        
+        function downloadLogo(size) {
+            drawLogo(size);
+            const canvas = document.getElementById('logoCanvas');
+            const link = document.createElement('a');
+            link.download = `admin-logo-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Draw initial logo
+        drawLogo(512);
+    </script>
+</body>
+</html>
