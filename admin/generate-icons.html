@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Icon Generator</title>
+</head>
+<body>
+    <canvas id="icon192" width="192" height="192"></canvas>
+    <canvas id="icon512" width="512" height="512"></canvas>
+    <script>
+        // Generate 192x192 icon
+        const canvas192 = document.getElementById('icon192');
+        const ctx192 = canvas192.getContext('2d');
+        
+        // Background
+        ctx192.fillStyle = '#1B4B8F';
+        ctx192.fillRect(0, 0, 192, 192);
+        
+        // Draw a settings icon style
+        ctx192.fillStyle = '#FFFFFF';
+        ctx192.font = 'bold 100px Arial';
+        ctx192.textAlign = 'center';
+        ctx192.textBaseline = 'middle';
+        ctx192.fillText('⚙', 96, 96);
+        
+        // Add small "A" text
+        ctx192.font = 'bold 50px Arial';
+        ctx192.fillText('A', 96, 145);
+        
+        // Generate 512x512 icon
+        const canvas512 = document.getElementById('icon512');
+        const ctx512 = canvas512.getContext('2d');
+        
+        // Background
+        ctx512.fillStyle = '#1B4B8F';
+        ctx512.fillRect(0, 0, 512, 512);
+        
+        // Draw a settings icon style
+        ctx512.fillStyle = '#FFFFFF';
+        ctx512.font = 'bold 260px Arial';
+        ctx512.textAlign = 'center';
+        ctx512.textBaseline = 'middle';
+        ctx512.fillText('⚙', 256, 256);
+        
+        // Add small "A" text
+        ctx512.font = 'bold 130px Arial';
+        ctx512.fillText('A', 256, 385);
+        
+        // Convert to downloadable images
+        setTimeout(() => {
+            canvas192.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'admin-icon-192.png';
+                a.click();
+            });
+            
+            canvas512.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'admin-icon-512.png';
+                a.click();
+            });
+        }, 100);
+    </script>
+</body>
+</html>
