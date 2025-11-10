@@ -15,7 +15,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Course Management - Admin Panel</title>
-    <link rel="stylesheet" href="admin.css?v=202511102038">
+    <link rel="stylesheet" href="admin.css?v=202511102220">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -423,6 +423,7 @@
             .course-item-actions {
                 width: 100%;
                 justify-content: flex-start;
+                flex-wrap: wrap;
             }
 
             .modal-content {
@@ -433,6 +434,70 @@
 
             .modal-header {
                 border-radius: 0;
+            }
+            
+            /* Better mobile layout */
+            .course-form,
+            .courses-list {
+                padding: 20px 15px;
+            }
+            
+            .btn-edit,
+            .btn-delete,
+            .btn-toggle {
+                flex: 1;
+                min-width: 90px;
+                justify-content: center;
+            }
+            
+            .course-features-display {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-dashboard {
+                padding: 15px !important;
+                margin-top: 70px !important;
+            }
+            
+            .section-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .btn-add-course {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .course-form,
+            .courses-list {
+                padding: 15px 10px;
+            }
+            
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .feature-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn-remove-feature {
+                width: 100%;
             }
         }
     </style>
@@ -448,12 +513,20 @@
                     <p>Course Management</p>
                 </div>
             </div>
+            
+            <!-- Hamburger Menu Button (Mobile Only) -->
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
             <div class="admin-actions">
                 <a href="index.html" class="btn-view-site">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    <i class="fas fa-arrow-left"></i> <span class="btn-text">Back to Dashboard</span>
                 </a>
                 <button class="btn-logout" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt"></i> <span class="btn-text">Logout</span>
                 </button>
             </div>
         </div>
@@ -969,6 +1042,39 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadCourses();
+            
+            // Hamburger menu functionality
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const adminActions = document.querySelector('.admin-actions');
+            
+            if (hamburgerMenu && adminActions) {
+                hamburgerMenu.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('active');
+                    adminActions.classList.toggle('mobile-menu-open');
+                    document.body.classList.toggle('mobile-menu-active');
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (adminActions.classList.contains('mobile-menu-open') && 
+                        !hamburgerMenu.contains(e.target) && 
+                        !adminActions.contains(e.target)) {
+                        hamburgerMenu.classList.remove('active');
+                        adminActions.classList.remove('mobile-menu-open');
+                        document.body.classList.remove('mobile-menu-active');
+                    }
+                });
+                
+                // Close menu when clicking a menu item
+                const menuItems = adminActions.querySelectorAll('.btn-view-site, .btn-logout');
+                menuItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        hamburgerMenu.classList.remove('active');
+                        adminActions.classList.remove('mobile-menu-open');
+                        document.body.classList.remove('mobile-menu-active');
+                    });
+                });
+            }
         });
     </script>
     

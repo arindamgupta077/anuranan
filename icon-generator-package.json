@@ -1,0 +1,11 @@
+{
+  "name": "anuranan-icon-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "generate-icons": "node generate-icons.mjs"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+}

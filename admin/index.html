@@ -15,7 +15,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Admin Panel - Anuranan</title>
-    <link rel="stylesheet" href="admin.css?v=202511102038">
+    <link rel="stylesheet" href="admin.css?v=202511102220">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,18 +32,26 @@
                     <h1>অনুরণন</h1>
                 </div>
             </div>
+            
+            <!-- Hamburger Menu Button (Mobile Only) -->
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
             <div class="admin-actions">
                 <a href="https://anuranan-j1j8.onrender.com/" class="btn-view-site" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Site
+                    <i class="fas fa-external-link-alt"></i> <span class="btn-text">View Site</span>
                 </a>
                 <a href="https://anuranan-emp-portal.netlify.app/login" class="btn-view-site" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> Employee Portal
+                    <i class="fas fa-external-link-alt"></i> <span class="btn-text">Employee Portal</span>
                 </a>
                 <a href="https://1drv.ms/x/c/492f14fdf41357c8/EchXE_T9FC8ggEmFAAAAAAABbARX1g_XElZohwKtCfQBQw" class="btn-view-site" target="_blank">
-                    <i class="fas fa-table"></i> Business Excel
+                    <i class="fas fa-table"></i> <span class="btn-text">Business Excel</span>
                 </a>
                 <button class="btn-logout" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt"></i> <span class="btn-text">Logout</span>
                 </button>
             </div>
         </div>

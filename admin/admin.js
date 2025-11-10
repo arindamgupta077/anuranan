@@ -1877,6 +1877,39 @@ window.loadCourses = loadCourses;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     
+    // Hamburger menu functionality
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const adminActions = document.querySelector('.admin-actions');
+    
+    if (hamburgerMenu && adminActions) {
+        hamburgerMenu.addEventListener('click', () => {
+            hamburgerMenu.classList.toggle('active');
+            adminActions.classList.toggle('mobile-menu-open');
+            document.body.classList.toggle('mobile-menu-active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (adminActions.classList.contains('mobile-menu-open') && 
+                !hamburgerMenu.contains(e.target) && 
+                !adminActions.contains(e.target)) {
+                hamburgerMenu.classList.remove('active');
+                adminActions.classList.remove('mobile-menu-open');
+                document.body.classList.remove('mobile-menu-active');
+            }
+        });
+        
+        // Close menu when clicking a menu item
+        const menuItems = adminActions.querySelectorAll('.btn-view-site, .btn-logout');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                hamburgerMenu.classList.remove('active');
+                adminActions.classList.remove('mobile-menu-open');
+                document.body.classList.remove('mobile-menu-active');
+            });
+        });
+    }
+    
     // Password toggle functionality
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('adminPassword');
