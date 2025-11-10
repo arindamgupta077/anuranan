@@ -30,6 +30,7 @@ let currentUser = null;
 async function checkAuth() {
     const loginSection = document.getElementById('loginSection');
     const adminDashboard = document.getElementById('adminDashboard');
+    const adminNavbar = document.querySelector('.admin-navbar');
     
     // Check current session
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -38,6 +39,8 @@ async function checkAuth() {
         currentUser = session.user;
         loginSection.style.display = 'none';
         adminDashboard.style.display = 'flex';
+        if (adminNavbar) adminNavbar.style.display = 'block';
+        loadDashboardData();
         loadGalleryItems();
         loadEventItems();
         loadCourses();
@@ -47,19 +50,171 @@ async function checkAuth() {
         currentUser = null;
         loginSection.style.display = 'flex';
         adminDashboard.style.display = 'none';
+        if (adminNavbar) adminNavbar.style.display = 'none';
     }
 }
+
+// ==================== 
+// Dashboard Functions
+// ==================== 
+
+async function loadDashboardData() {
+    await Promise.all([
+        loadDashboardStats(),
+        loadRecentMessages()
+    ]);
+}
+
+async function loadDashboardStats() {
+    try {
+        // Fetch counts - gallery and events from storage, others from tables
+        const [galleryData, eventsData, coursesCount, classesCount, messagesCount, unreadCount] = await Promise.all([
+            supabase.storage.from(GALLERY_BUCKET).list('', { limit: 1000 }),
+            supabase.storage.from(EVENTS_BUCKET).list('', { limit: 1000 }),
+            supabase.from('courses').select('*', { count: 'exact', head: true }),
+            supabase.from('class_details').select('*', { count: 'exact', head: true }),
+            supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
+            supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('read', false)
+        ]);
+
+        console.log('Dashboard Stats:', {
+            gallery: galleryData,
+            events: eventsData,
+            courses: coursesCount,
+            classes: classesCount,
+            messages: messagesCount,
+            unread: unreadCount
+        });
+
+        // Calculate counts from storage (filter out .emptyFolderPlaceholder)
+        const galleryCount = galleryData.data ? galleryData.data.filter(item => item.name !== '.emptyFolderPlaceholder').length : 0;
+        const eventsCount = eventsData.data ? eventsData.data.filter(item => item.name !== '.emptyFolderPlaceholder').length : 0;
+
+        // Update stats display
+        document.getElementById('totalGallery').textContent = galleryCount;
+        document.getElementById('totalEvents').textContent = eventsCount;
+        document.getElementById('totalCourses').textContent = coursesCount.count || 0;
+        document.getElementById('totalClasses').textContent = classesCount.count || 0;
+        document.getElementById('totalMessages').textContent = messagesCount.count || 0;
+        document.getElementById('unreadMessages').textContent = unreadCount.count || 0;
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+    }
+}
+
+async function loadRecentMessages() {
+    const container = document.getElementById('recentMessages');
+    
+    try {
+        const { data: messages, error } = await supabase
+            .from('contact_messages')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(5);
+
+        if (error) throw error;
+
+        if (messages && messages.length > 0) {
+            container.innerHTML = messages.map(msg => `
+                <div class="recent-message-item ${msg.read ? 'read' : 'unread'}">
+                    <div class="message-indicator ${msg.read ? '' : 'unread'}"></div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <strong>${msg.name}</strong>
+                            <span class="message-time">${formatMessageTime(msg.created_at)}</span>
+                        </div>
+                        <div class="message-subject">${msg.subject}</div>
+                        <div class="message-preview">${msg.message.substring(0, 80)}${msg.message.length > 80 ? '...' : ''}</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div class="no-messages"><i class="fas fa-inbox"></i> No messages yet</div>';
+        }
+    } catch (error) {
+        console.error('Error loading recent messages:', error);
+        container.innerHTML = '<div class="error-message">Failed to load recent messages</div>';
+    }
+}
+
+function formatMessageTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+}
+
+// Dashboard refresh button
+document.getElementById('refreshDashboardBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('refreshDashboardBtn');
+    const icon = btn.querySelector('i');
+    icon.classList.add('fa-spin');
+    await loadDashboardData();
+    setTimeout(() => icon.classList.remove('fa-spin'), 500);
+});
+
+// Quick action buttons
+document.querySelectorAll('.quick-action-card').forEach(card => {
+    card.addEventListener('click', () => {
+        const section = card.dataset.section;
+        const action = card.dataset.action;
+
+        if (section) {
+            // Navigate to section
+            const menuItem = document.querySelector(`.menu-item[data-section="${section}"]`);
+            if (menuItem) {
+                menuItem.click();
+                // If it's gallery section, trigger add photo
+                if (section === 'gallery') {
+                    setTimeout(() => document.getElementById('addGalleryBtn')?.click(), 100);
+                }
+            }
+        } else if (action) {
+            // Perform action
+            switch (action) {
+                case 'add-event':
+                    document.querySelector(`.menu-item[data-section="events"]`)?.click();
+                    setTimeout(() => document.getElementById('addEventBtn')?.click(), 100);
+                    break;
+                case 'add-course':
+                    document.querySelector(`.menu-item[data-section="courses"]`)?.click();
+                    setTimeout(() => document.getElementById('addCourseBtn')?.click(), 100);
+                    break;
+                case 'add-class':
+                    document.querySelector(`.menu-item[data-section="class-details"]`)?.click();
+                    setTimeout(() => document.getElementById('addClassBtn')?.click(), 100);
+                    break;
+                case 'view-site':
+                    window.open('index.html', '_blank');
+                    break;
+            }
+        }
+    });
+});
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
     const errorMessage = document.getElementById('loginError');
+    const errorText = errorMessage.querySelector('.error-text');
     const submitBtn = e.target.querySelector('button[type="submit"]');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoader = submitBtn.querySelector('.btn-loader');
     
     try {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        btnText.style.display = 'none';
+        btnLoader.style.display = 'flex';
+        errorMessage.classList.remove('show');
         
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
@@ -68,14 +223,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         
         if (error) throw error;
         
-        errorMessage.classList.remove('show');
         await checkAuth();
     } catch (error) {
         console.error('Login error:', error);
-        errorMessage.textContent = error.message || 'Login failed. Please check your credentials.';
+        errorText.textContent = error.message || 'Login failed. Please check your credentials.';
         errorMessage.classList.add('show');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+        btnText.style.display = 'flex';
+        btnLoader.style.display = 'none';
     }
 });
 
@@ -1366,23 +1521,6 @@ async function loadCourses() {
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Action Buttons - Top Right -->
-                        <div class="course-actions-top">
-                            <button class="btn-action-icon" onclick="editCourse('${course.id}')" title="Edit Course">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-action-icon ${course.is_active ? '' : 'btn-toggle-off'}" 
-                                    onclick="toggleCourse('${course.id}', ${!course.is_active})"
-                                    title="${course.is_active ? 'Hide Course' : 'Show Course'}">
-                                <i class="fas fa-${course.is_active ? 'eye' : 'eye-slash'}"></i>
-                            </button>
-                            <button class="btn-action-icon btn-delete-icon" 
-                                    onclick="deleteCourse('${course.id}', '${escapeHtml(course.title)}')"
-                                    title="Delete Course">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
                     </div>
                     
                     <!-- Badges Section -->
@@ -1431,6 +1569,23 @@ async function loadCourses() {
                                 Featured: <strong>"${escapeHtml(course.featured_text)}"</strong>
                             </div>
                             ` : ''}
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="course-actions-footer">
+                            <button class="btn-action-footer btn-edit" onclick="editCourse('${course.id}')" title="Edit Course">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-action-footer btn-toggle ${course.is_active ? '' : 'btn-toggle-off'}" 
+                                    onclick="toggleCourse('${course.id}', ${!course.is_active})"
+                                    title="${course.is_active ? 'Hide Course' : 'Show Course'}">
+                                <i class="fas fa-${course.is_active ? 'eye' : 'eye-slash'}"></i> ${course.is_active ? 'Hide' : 'Show'}
+                            </button>
+                            <button class="btn-action-footer btn-delete" 
+                                    onclick="deleteCourse('${course.id}', '${escapeHtml(course.title)}')"
+                                    title="Delete Course">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1616,4 +1771,20 @@ window.loadCourses = loadCourses;
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
+    
+    // Password toggle functionality
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('adminPassword');
+    
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle icon
+            const icon = togglePassword.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    }
 });

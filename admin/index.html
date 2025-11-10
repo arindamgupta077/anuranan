@@ -27,11 +27,14 @@
                 </div>
             </div>
             <div class="admin-actions">
-                <a href="index.html" class="btn-view-site" target="_blank">
+                <a href="https://anuranan-j1j8.onrender.com/" class="btn-view-site" target="_blank">
                     <i class="fas fa-external-link-alt"></i> View Site
                 </a>
                 <a href="https://anuranan-emp-portal.netlify.app/login" class="btn-view-site" target="_blank">
                     <i class="fas fa-external-link-alt"></i> Employee Portal
+                </a>
+                <a href="https://1drv.ms/x/c/492f14fdf41357c8/EchXE_T9FC8ggEmFAAAAAAABbARX1g_XElZohwKtCfQBQw" class="btn-view-site" target="_blank">
+                    <i class="fas fa-table"></i> Business Excel
                 </a>
                 <button class="btn-logout" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i> Logout
@@ -42,41 +45,75 @@
 
     <!-- Login Section -->
     <section id="loginSection" class="login-section">
+        <div class="login-bg-pattern"></div>
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
         <div class="login-container">
             <div class="login-card">
                 <div class="login-header">
-                    <div class="logo-icon">অ</div>
-                    <h2>Admin Login</h2>
-                    <p>Anuranan Management Portal</p>
+                    <div class="logo-wrapper">
+                        <div class="logo-icon">অ</div>
+                        <div class="logo-glow"></div>
+                    </div>
+                    <h2>Welcome Back</h2>
+                    <p>Anuranan Admin Portal</p>
                 </div>
                 <form id="loginForm" class="login-form">
                     <div class="form-group">
                         <label for="adminEmail">
                             <i class="fas fa-envelope"></i> Email Address
                         </label>
-                        <input 
-                            type="email" 
-                            id="adminEmail" 
-                            placeholder="Enter your email" 
-                            required
-                        >
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="adminEmail" 
+                                placeholder="snehasree@anuranan.in" 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="adminPassword">
                             <i class="fas fa-lock"></i> Password
                         </label>
-                        <input 
-                            type="password" 
-                            id="adminPassword" 
-                            placeholder="Enter your password" 
-                            required
-                        >
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="adminPassword" 
+                                placeholder="Enter your password" 
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="toggle-password" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Login
+                        <span class="btn-text">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </span>
+                        <span class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Signing in...
+                        </span>
                     </button>
-                    <div id="loginError" class="error-message"></div>
+                    <div id="loginError" class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span class="error-text"></span>
+                    </div>
                 </form>
+                <div class="login-footer">
+                    <p><i class="fas fa-shield-alt"></i> Secure Authentication</p>
+                </div>
             </div>
         </div>
     </section>
@@ -86,7 +123,11 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar">
             <nav class="admin-menu">
-                <a href="#gallery-management" class="menu-item active" data-section="gallery">
+                <a href="#dashboard-management" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#gallery-management" class="menu-item" data-section="gallery">
                     <i class="fas fa-images"></i>
                     <span>Gallery Management</span>
                 </a>
@@ -112,8 +153,157 @@
 
         <!-- Main Content -->
         <main class="admin-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-management" class="management-section active">
+                <div class="section-header-admin">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                    <button class="btn-refresh" id="refreshDashboardBtn" title="Refresh dashboard">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <!-- Analytics Cards -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e3f2fd;">
+                            <i class="fas fa-images" style="color: #2196f3;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalGallery">0</h3>
+                            <p>Gallery Photos</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e5f5;">
+                            <i class="fas fa-calendar-alt" style="color: #9c27b0;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalEvents">0</h3>
+                            <p>Events & Programs</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9;">
+                            <i class="fas fa-book" style="color: #4caf50;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCourses">0</h3>
+                            <p>Active Courses</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fff3e0;">
+                            <i class="fas fa-chalkboard-teacher" style="color: #ff9800;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalClasses">0</h3>
+                            <p>Class Details</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fce4ec;">
+                            <i class="fas fa-envelope" style="color: #e91e63;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalMessages">0</h3>
+                            <p>Total Messages</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card highlight">
+                        <div class="stat-icon" style="background: #ffebee;">
+                            <i class="fas fa-envelope-open" style="color: #f44336;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="unreadMessages">0</h3>
+                            <p>Unread Messages</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-card" data-section="gallery">
+                            <div class="qa-icon" style="background: #e3f2fd; color: #2196f3;">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>Add Photo</h4>
+                                <p>Upload to gallery</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-action="add-event">
+                            <div class="qa-icon" style="background: #f3e5f5; color: #9c27b0;">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>Add Event</h4>
+                                <p>Create new event</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-action="add-course">
+                            <div class="qa-icon" style="background: #e8f5e9; color: #4caf50;">
+                                <i class="fas fa-book-medical"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>Add Course</h4>
+                                <p>Create new course</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-action="add-class">
+                            <div class="qa-icon" style="background: #fff3e0; color: #ff9800;">
+                                <i class="fas fa-chalkboard"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>Add Class</h4>
+                                <p>Create class details</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-section="messages">
+                            <div class="qa-icon" style="background: #fce4ec; color: #e91e63;">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>View Messages</h4>
+                                <p>Check contact form</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-action="view-site">
+                            <div class="qa-icon" style="background: #e0f2f1; color: #009688;">
+                                <i class="fas fa-external-link-alt"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>View Site</h4>
+                                <p>Open website</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title"><i class="fas fa-clock"></i> Recent Messages</h3>
+                    <div class="recent-messages" id="recentMessages">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading recent messages...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Gallery Management Section -->
-            <section id="gallery-management" class="management-section active">
+            <section id="gallery-management" class="management-section">
                 <div class="section-header-admin">
                     <h2><i class="fas fa-images"></i> Gallery Management</h2>
                     <div style="display: flex; gap: 10px; align-items: center;">
