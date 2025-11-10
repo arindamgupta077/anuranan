@@ -1659,7 +1659,8 @@ async function loadCourses() {
                                 <i class="fas fa-${course.is_active ? 'eye' : 'eye-slash'}"></i> ${course.is_active ? 'Hide' : 'Show'}
                             </button>
                             <button class="btn-action-footer btn-delete" 
-                                    onclick="deleteCourse('${course.id}', '${escapeHtml(course.title)}')"
+                                    data-course-id="${course.id}" 
+                                    data-course-title="${escapeHtml(course.title)}"
                                     title="Delete Course">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
@@ -1668,6 +1669,16 @@ async function loadCourses() {
                 </div>
             `;
         }).join('');
+
+        // Add event delegation for delete buttons
+        const deleteButtons = grid.querySelectorAll('.btn-delete');
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const courseId = this.getAttribute('data-course-id');
+                const courseTitle = this.getAttribute('data-course-title');
+                deleteCourse(courseId, courseTitle);
+            });
+        });
 
     } catch (error) {
         console.error('Error loading courses:', error);
@@ -1713,16 +1724,33 @@ async function editCourse(courseId) {
         // Populate features
         const featuresList = document.getElementById('featuresList');
         const features = Array.isArray(course.features) ? course.features : [];
-        featuresList.innerHTML = features.map(feature => `
-            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <input type="text" class="feature-input" value="${escapeHtml(feature)}" required 
-                       style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
-                <button type="button" class="btn-remove-feature" onclick="removeFeature(this)"
-                        style="background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `).join('');
+        // Clear the list first
+        featuresList.innerHTML = '';
+        
+        // Create feature items properly without escapeHtml in input values
+        features.forEach(feature => {
+            const featureDiv = document.createElement('div');
+            featureDiv.className = 'feature-item';
+            featureDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'feature-input';
+            input.value = feature; // Direct assignment - browser handles special chars safely
+            input.required = true;
+            input.style.cssText = 'flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;';
+            
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn-remove-feature';
+            button.style.cssText = 'background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;';
+            button.innerHTML = '<i class="fas fa-trash"></i>';
+            button.onclick = function() { removeFeature(this); };
+            
+            featureDiv.appendChild(input);
+            featureDiv.appendChild(button);
+            featuresList.appendChild(featureDiv);
+        });
 
         // Update modal title
         document.getElementById('courseModalTitle').textContent = 'Edit Course';
