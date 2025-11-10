@@ -1749,6 +1749,14 @@ section {
     grid-template-columns: 1.5fr 1fr; /* Image takes more space */
     gap: 80px; /* Larger gap for more horizontal spread */
     margin-top: 50px;
+    align-items: start;
+}
+
+.class-images-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
 }
 
 .class-image-container {
@@ -1756,6 +1764,8 @@ section {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-height: 0;
 }
 
 .class-image {
@@ -1764,6 +1774,11 @@ section {
     object-fit: cover;
     display: block;
     transition: transform 0.5s ease;
+}
+
+.class-image-compressed {
+    height: auto;
+    object-fit: cover;
 }
 
 .class-image-container:hover .class-image {
@@ -1798,6 +1813,37 @@ section {
     border-radius: 20px;
     padding: 30px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.class-info-text {
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 1.1em;
+    line-height: 2;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(27, 75, 143, 0.05), rgba(253, 184, 19, 0.05));
+    border-radius: 15px;
+    border-left: 4px solid var(--golden-yellow);
+}
+
+.class-info-text p {
+    margin-bottom: 20px;
+}
+
+.class-info-text p:last-child {
+    margin-bottom: 0;
+}
+
+.class-info-text strong {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.class-info-text em {
+    color: var(--golden-yellow);
+    font-style: italic;
+    font-size: 1.05em;
 }
 
 .schedule-header {
@@ -2930,12 +2976,28 @@ section {
         gap: 30px;
     }
 
+    .class-images-column {
+        gap: 15px;
+    }
+
     .class-image-container {
-        height: 300px;
+        height: 200px;
+        flex: 1;
+        min-height: 150px;
     }
 
     .class-schedule-container {
         padding: 20px;
+    }
+
+    .class-info-text {
+        padding: 15px;
+        font-size: 1em;
+        line-height: 1.8;
+    }
+
+    .class-info-text p {
+        margin-bottom: 16px;
     }
 
     .schedule-header h3 {
