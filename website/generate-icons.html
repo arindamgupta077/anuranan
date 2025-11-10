@@ -2,59 +2,136 @@
 <html>
 <head>
     <title>Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1B4B8F; }
+        canvas { 
+            border: 2px solid #ddd; 
+            margin: 10px;
+            display: inline-block;
+        }
+        button {
+            background: #1B4B8F;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #143a6f; }
+        .preview { margin: 20px 0; }
+    </style>
 </head>
 <body>
-    <canvas id="icon192" width="192" height="192"></canvas>
-    <canvas id="icon512" width="512" height="512"></canvas>
+    <div class="container">
+        <h1>PWA Icon Generator</h1>
+        <p>Click the buttons below to generate and download the required PWA icons.</p>
+        
+        <div class="preview">
+            <canvas id="icon192" width="192" height="192"></canvas>
+            <canvas id="icon512" width="512" height="512"></canvas>
+        </div>
+        
+        <button onclick="generateIcons()">Generate Icons</button>
+        <button onclick="downloadIcon192()">Download 192x192</button>
+        <button onclick="downloadIcon512()">Download 512x512</button>
+        
+        <p><strong>Instructions:</strong></p>
+        <ol>
+            <li>Click "Generate Icons" to create the images</li>
+            <li>Click the download buttons to save each icon</li>
+            <li>Save them as <code>icon-192.png</code> and <code>icon-512.png</code></li>
+            <li>Place them in the <code>website/public/</code> folder</li>
+        </ol>
+    </div>
+    
     <script>
-        // Generate 192x192 icon
-        const canvas192 = document.getElementById('icon192');
-        const ctx192 = canvas192.getContext('2d');
+        function generateIcons() {
+            // Generate 192x192 icon
+            const canvas192 = document.getElementById('icon192');
+            const ctx192 = canvas192.getContext('2d');
+            
+            // Background
+            ctx192.fillStyle = '#1B4B8F';
+            ctx192.fillRect(0, 0, 192, 192);
+            
+            // Bengali letter "অ"
+            ctx192.fillStyle = '#FFFFFF';
+            ctx192.font = 'bold 100px Arial';
+            ctx192.textAlign = 'center';
+            ctx192.textBaseline = 'middle';
+            ctx192.fillText('অ', 96, 80);
+            
+            // Text "Anuranan"
+            ctx192.font = 'bold 24px Arial';
+            ctx192.fillText('Anuranan', 96, 145);
+            
+            // Generate 512x512 icon
+            const canvas512 = document.getElementById('icon512');
+            const ctx512 = canvas512.getContext('2d');
+            
+            // Background
+            ctx512.fillStyle = '#1B4B8F';
+            ctx512.fillRect(0, 0, 512, 512);
+            
+            // Bengali letter "অ"
+            ctx512.fillStyle = '#FFFFFF';
+            ctx512.font = 'bold 280px Arial';
+            ctx512.textAlign = 'center';
+            ctx512.textBaseline = 'middle';
+            ctx512.fillText('অ', 256, 220);
+            
+            // Text "Anuranan"
+            ctx512.font = 'bold 64px Arial';
+            ctx512.fillText('Anuranan', 256, 400);
+            
+            alert('Icons generated! Now click the download buttons.');
+        }
         
-        // Background
-        ctx192.fillStyle = '#1B4B8F';
-        ctx192.fillRect(0, 0, 192, 192);
-        
-        // Text
-        ctx192.fillStyle = '#FFFFFF';
-        ctx192.font = 'bold 80px Arial';
-        ctx192.textAlign = 'center';
-        ctx192.textBaseline = 'middle';
-        ctx192.fillText('A', 96, 96);
-        
-        // Generate 512x512 icon
-        const canvas512 = document.getElementById('icon512');
-        const ctx512 = canvas512.getContext('2d');
-        
-        // Background
-        ctx512.fillStyle = '#1B4B8F';
-        ctx512.fillRect(0, 0, 512, 512);
-        
-        // Text
-        ctx512.fillStyle = '#FFFFFF';
-        ctx512.font = 'bold 220px Arial';
-        ctx512.textAlign = 'center';
-        ctx512.textBaseline = 'middle';
-        ctx512.fillText('A', 256, 256);
-        
-        // Convert to downloadable images
-        setTimeout(() => {
-            canvas192.toBlob((blob) => {
+        function downloadIcon192() {
+            const canvas = document.getElementById('icon192');
+            canvas.toBlob((blob) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'icon-192.png';
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             });
-            
-            canvas512.toBlob((blob) => {
+        }
+        
+        function downloadIcon512() {
+            const canvas = document.getElementById('icon512');
+            canvas.toBlob((blob) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
                 a.download = 'icon-512.png';
+                document.body.appendChild(a);
+                a.href = url;
                 a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             });
-        }, 100);
+        }
+        
+        // Auto-generate on load
+        window.addEventListener('load', generateIcons);
     </script>
 </body>
 </html>
