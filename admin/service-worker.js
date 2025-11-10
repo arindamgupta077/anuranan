@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anuranan-admin-v1';
+const CACHE_NAME = 'anuranan-admin-v2';
 const urlsToCache = [
   '/admin/',
   '/admin/index.html',
@@ -6,17 +6,22 @@ const urlsToCache = [
   '/admin/admin.css',
   '/admin/admin.js',
   '/admin/supabase-loader.js',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  '/admin/public/admin-logo-192x192.png',
+  '/admin/public/admin-logo-512x512.png'
 ];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
+  console.log('Admin Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Admin Service Worker: Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache).catch(err => {
+          console.error('Failed to cache some resources:', err);
+          // Continue even if some resources fail
+          return Promise.resolve();
+        });
       })
   );
   self.skipWaiting();
@@ -24,6 +29,11 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -31,6 +41,7 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
+        
         return fetch(event.request).then(
           (response) => {
             // Check if we received a valid response
@@ -49,6 +60,10 @@ self.addEventListener('fetch', (event) => {
             return response;
           }
         );
+      })
+      .catch(() => {
+        // Return offline page or default response
+        return caches.match('/admin/index.html');
       })
   );
 });

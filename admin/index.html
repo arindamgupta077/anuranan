@@ -8,10 +8,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1B4B8F">
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="public/admin-logo-192x192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="public/admin-logo-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="public/admin-logo-512x512.png">
+    <link rel="manifest" href="/admin/manifest.json" crossorigin="use-credentials">
+    <link rel="apple-touch-icon" href="/admin/public/admin-logo-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/admin/public/admin-logo-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/admin/public/admin-logo-512x512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/admin/public/admin-logo-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/admin/public/admin-logo-512x512.png">
     <!-- Cache Control Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -770,15 +772,40 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/admin/service-worker.js')
+                navigator.serviceWorker.register('/admin/service-worker.js', { scope: '/admin/' })
                     .then((registration) => {
                         console.log('Admin Service Worker registered successfully:', registration.scope);
+                        
+                        // Check for updates
+                        registration.update();
+                        
+                        // Listen for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('New service worker available, reload to update');
+                                }
+                            });
+                        });
                     })
                     .catch((error) => {
-                        console.log('Admin Service Worker registration failed:', error);
+                        console.error('Admin Service Worker registration failed:', error);
                     });
             });
         }
+
+        // Install prompt handling
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA install prompt available');
+            deferredPrompt = e;
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            deferredPrompt = null;
+        });
     </script>
 </body>
 </html>
