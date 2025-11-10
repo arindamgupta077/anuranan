@@ -351,31 +351,53 @@ async function loadGalleryItems() {
         // Store items
         galleryItems = data.filter(item => !item.name.includes('.emptyFolderPlaceholder'));
         
+        // Check if we have any valid items after filtering
+        if (galleryItems.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <h3>No Gallery Photos Yet</h3>
+                    <p>Click "Add Photo" to upload your first gallery image</p>
+                </div>
+            `;
+            return;
+        }
+        
         // Render items
         grid.innerHTML = '';
+        const validItems = [];
+        
         for (const item of galleryItems) {
-            // Add cache busting parameter to public URL
-            const { data: urlData } = supabase.storage
-                .from(GALLERY_BUCKET)
-                .getPublicUrl(item.name);
-            
-            // Add cache buster using item's updated_at timestamp
-            const cacheBuster = item.updated_at ? new Date(item.updated_at).getTime() : Date.now();
-            const imageUrl = `${urlData.publicUrl}?t=${cacheBuster}`;
-            
-            // Parse metadata from filename (format: title___description___timestamp.ext or title___description.ext)
-            const fileNameParts = item.name.split('___');
-            const title = fileNameParts[0] ? decodeURIComponent(fileNameParts[0]) : 'Untitled';
-            // Handle both new format (with timestamp) and old format (without)
-            const descPart = fileNameParts[1] || 'No description';
-            const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
-            const cleanDescription = decodeURIComponent(description);
-            
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.innerHTML = `
-                <img src="${imageUrl}" alt="${title}" class="item-image">
-                <div class="item-content">
+            try {
+                // Add cache busting parameter to public URL
+                const { data: urlData } = supabase.storage
+                    .from(GALLERY_BUCKET)
+                    .getPublicUrl(item.name);
+                
+                if (!urlData || !urlData.publicUrl) {
+                    console.warn('Skipping item with invalid URL:', item.name);
+                    continue;
+                }
+                
+                // Add cache buster using item's updated_at timestamp
+                const cacheBuster = item.updated_at ? new Date(item.updated_at).getTime() : Date.now();
+                const imageUrl = `${urlData.publicUrl}?t=${cacheBuster}`;
+                
+                // Parse metadata from filename (format: title___description___timestamp.ext or title___description.ext)
+                const fileNameParts = item.name.split('___');
+                const title = fileNameParts[0] ? decodeURIComponent(fileNameParts[0]) : 'Untitled';
+                // Handle both new format (with timestamp) and old format (without)
+                const descPart = fileNameParts[1] || 'No description';
+                const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
+                const cleanDescription = decodeURIComponent(description);
+                
+                validItems.push(item);
+                
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${title}" class="item-image" onerror="this.parentElement.style.display='none'">
+                    <div class="item-content">
                     <h3 class="item-title">${title}</h3>
                     <p class="item-description">${cleanDescription}</p>
                     <div class="item-actions">
@@ -388,7 +410,25 @@ async function loadGalleryItems() {
                     </div>
                 </div>
             `;
-            grid.appendChild(card);
+                grid.appendChild(card);
+            } catch (err) {
+                console.error('Error rendering gallery item:', item.name, err);
+                continue;
+            }
+        }
+        
+        // Update galleryItems to only include valid items
+        galleryItems = validItems;
+        
+        // If no valid items after filtering, show empty state
+        if (galleryItems.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-images"></i>
+                    <h3>No Gallery Photos Yet</h3>
+                    <p>Click "Add Photo" to upload your first gallery image</p>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading gallery items:', error);
@@ -654,37 +694,59 @@ async function loadEventItems() {
         // Store items
         eventItems = data.filter(item => !item.name.includes('.emptyFolderPlaceholder'));
         
+        // Check if we have any valid items after filtering
+        if (eventItems.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>No Events Yet</h3>
+                    <p>Click "Add Event" to create your first event</p>
+                </div>
+            `;
+            return;
+        }
+        
         // Render items
         grid.innerHTML = '';
+        const validItems = [];
+        
         for (const item of eventItems) {
-            // Parse metadata from filename
-            // Format: day_month_category___title___description___time___location.json
-            const parts = item.name.replace('.json', '').split('___');
-            const dateParts = parts[0].split('_');
-            
-            const day = dateParts[0] || '01';
-            const month = dateParts[1] || 'JAN';
-            const category = dateParts[2] || 'Event';
-            const title = parts[1] ? decodeURIComponent(parts[1]) : 'Untitled Event';
-            const description = parts[2] ? decodeURIComponent(parts[2]) : 'No description';
-            const time = parts[3] ? decodeURIComponent(parts[3]) : 'TBA';
-            const location = parts[4] ? decodeURIComponent(parts[4]) : 'TBA';
-            
-            // Fetch the JSON file to get photo URL
-            let photoUrl = '';
+            // Fetch the JSON file to get all event data
+            let eventData;
             try {
                 const { data: fileData, error: fileError } = await supabase.storage
                     .from(EVENTS_BUCKET)
                     .download(item.name);
                 
-                if (!fileError && fileData) {
+                if (fileError) {
+                    // File doesn't exist (was deleted), skip this item
+                    console.warn('Skipping deleted/invalid event file:', item.name);
+                    continue;
+                }
+                
+                if (fileData) {
                     const text = await fileData.text();
-                    const jsonData = JSON.parse(text);
-                    photoUrl = jsonData.photoUrl || '';
+                    eventData = JSON.parse(text);
+                } else {
+                    continue;
                 }
             } catch (err) {
                 console.error('Error loading event data:', err);
+                // Skip this item if we can't load it
+                continue;
             }
+            
+            // Extract data from JSON
+            const day = eventData.day || '01';
+            const month = eventData.month || 'JAN';
+            const category = eventData.category || 'Event';
+            const title = eventData.title || 'Untitled Event';
+            const description = eventData.description || 'No description';
+            const time = eventData.time || 'TBA';
+            const location = eventData.location || 'TBA';
+            const photoUrl = eventData.photoUrl || '';
+            
+            validItems.push(item);
             
             const card = document.createElement('div');
             card.className = 'item-card';
@@ -716,6 +778,20 @@ async function loadEventItems() {
                 </div>
             `;
             grid.appendChild(card);
+        }
+        
+        // Update eventItems to only include valid items
+        eventItems = validItems;
+        
+        // If no valid items after filtering, show empty state
+        if (eventItems.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>No Events Yet</h3>
+                    <p>Click "Add Event" to create your first event</p>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading events:', error);
@@ -832,10 +908,12 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
             // Note: old photos are not deleted to avoid breaking references
         }
         
-        // Create filename with metadata
-        const fileName = `${day}_${month}_${encodeURIComponent(category)}___${encodeURIComponent(title)}___${encodeURIComponent(description)}___${encodeURIComponent(time)}___${encodeURIComponent(location)}.json`;
+        // Create a simple filename using timestamp and basic info (no special characters)
+        // Store all metadata in the JSON file instead
+        const timestamp = Date.now();
+        const fileName = `event_${day}_${month}_${timestamp}.json`;
         
-        // Create JSON data
+        // Create JSON data with all metadata
         const eventData = {
             day,
             month,
@@ -875,17 +953,7 @@ document.getElementById('eventForm').addEventListener('submit', async (e) => {
 
 // Edit Event Item
 async function editEventItem(fileName) {
-    const parts = fileName.replace('.json', '').split('___');
-    const dateParts = parts[0].split('_');
-    
     document.getElementById('eventModalTitle').textContent = 'Edit Event';
-    document.getElementById('eventDay').value = dateParts[0] || '';
-    document.getElementById('eventMonth').value = dateParts[1] || '';
-    document.getElementById('eventCategory').value = decodeURIComponent(dateParts[2] || '');
-    document.getElementById('eventTitle').value = parts[1] ? decodeURIComponent(parts[1]) : '';
-    document.getElementById('eventDescription').value = parts[2] ? decodeURIComponent(parts[2]) : '';
-    document.getElementById('eventTime').value = parts[3] ? decodeURIComponent(parts[3]) : '';
-    document.getElementById('eventLocation').value = parts[4] ? decodeURIComponent(parts[4]) : '';
     document.getElementById('eventId').value = fileName;
     
     // Reset photo state
@@ -901,16 +969,25 @@ async function editEventItem(fileName) {
         
         if (!fileError && fileData) {
             const text = await fileData.text();
-            const jsonData = JSON.parse(text);
+            const eventData = JSON.parse(text);
             
-            if (jsonData.photoUrl) {
-                currentEventPhotoUrl = jsonData.photoUrl; // Store current photo URL
-                document.getElementById('eventPhotoPreviewImg').src = jsonData.photoUrl;
+            // Populate form fields from JSON data
+            document.getElementById('eventDay').value = eventData.day || '';
+            document.getElementById('eventMonth').value = eventData.month || '';
+            document.getElementById('eventCategory').value = eventData.category || '';
+            document.getElementById('eventTitle').value = eventData.title || '';
+            document.getElementById('eventDescription').value = eventData.description || '';
+            document.getElementById('eventTime').value = eventData.time || '';
+            document.getElementById('eventLocation').value = eventData.location || '';
+            
+            if (eventData.photoUrl) {
+                currentEventPhotoUrl = eventData.photoUrl; // Store current photo URL
+                document.getElementById('eventPhotoPreviewImg').src = eventData.photoUrl;
                 document.getElementById('eventPhotoPreview').style.display = 'block';
             }
         }
     } catch (err) {
-        console.error('Error loading event photo:', err);
+        console.error('Error loading event data:', err);
     }
     
     openModal('eventModal');

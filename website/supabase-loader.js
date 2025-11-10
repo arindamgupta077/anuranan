@@ -148,34 +148,38 @@ async function loadEventsFromSupabase() {
 
         // Render events from Supabase
         for (const item of eventItems) {
-            // Parse metadata from filename
-            // Format: day_month_category___title___description___time___location.json
-            const parts = item.name.replace('.json', '').split('___');
-            const dateParts = parts[0].split('_');
-
-            const day = dateParts[0] || '01';
-            const month = dateParts[1] || 'JAN';
-            const category = dateParts[2] ? decodeURIComponent(dateParts[2]) : 'Event';
-            const title = parts[1] ? decodeURIComponent(parts[1]) : 'Untitled Event';
-            const description = parts[2] ? decodeURIComponent(parts[2]) : 'Join us for this exciting event.';
-            const time = parts[3] ? decodeURIComponent(parts[3]) : 'TBA';
-            const location = parts[4] ? decodeURIComponent(parts[4]) : 'TBA';
-
-            // Fetch the JSON file to get photo URL
-            let photoUrl = '';
+            // Fetch the JSON file to get all event data
+            let eventData;
             try {
                 const { data: fileData, error: fileError } = await supabaseClient.storage
                     .from(EVENTS_BUCKET)
                     .download(item.name);
                 
-                if (!fileError && fileData) {
+                if (fileError) {
+                    console.warn('Skipping event file:', item.name, fileError);
+                    continue;
+                }
+                
+                if (fileData) {
                     const text = await fileData.text();
-                    const jsonData = JSON.parse(text);
-                    photoUrl = jsonData.photoUrl || '';
+                    eventData = JSON.parse(text);
+                } else {
+                    continue;
                 }
             } catch (err) {
                 console.error('Error loading event data:', err);
+                continue;
             }
+
+            // Extract data from JSON
+            const day = eventData.day || '01';
+            const month = eventData.month || 'JAN';
+            const category = eventData.category || 'Event';
+            const title = eventData.title || 'Untitled Event';
+            const description = eventData.description || 'Join us for this exciting event.';
+            const time = eventData.time || 'TBA';
+            const location = eventData.location || 'TBA';
+            const photoUrl = eventData.photoUrl || '';
 
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card fade-in';
