@@ -76,7 +76,7 @@ textarea {
 .admin-logo .logo-icon {
     width: 50px;
     height: 50px;
-    background: var(--primary-yellow);
+    background: linear-gradient(135deg, var(--primary-yellow), var(--accent-yellow));
     color: var(--primary-blue);
     border-radius: 12px;
     display: flex;
@@ -89,10 +89,36 @@ textarea {
 }
 
 .admin-logo .logo-text h1 {
-    font-size: 24px;
+    font-size: 32px;
     font-family: var(--font-bengali);
     margin: 0;
-    color: white;
+    background: linear-gradient(135deg, #FDB813 0%, #FFD700 30%, #FFFFFF 60%, #4A90E2 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: relative;
+    animation: headerGradientShift 6s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(253, 184, 19, 0.3));
+    transition: transform 0.4s ease;
+}
+
+/* Premium gradient animation for admin header */
+@keyframes headerGradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Mild aesthetic hover - subtle scale and faster gradient */
+.admin-logo .logo-text h1:hover {
+    transform: scale(1.05);
+    animation: headerGradientShift 3s ease-in-out infinite;
 }
 
 .admin-logo .logo-text p {

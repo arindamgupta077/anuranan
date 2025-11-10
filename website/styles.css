@@ -209,9 +209,48 @@ button {
 
 .logo-text h1 {
     font-family: var(--font-bengali);
-    font-size: 24px;
-    color: var(--primary-blue);
+    font-size: 32px;
     margin-bottom: -5px;
+    background: linear-gradient(135deg, #1B4B8F 0%, #4A90E2 30%, #FDB813 60%, #FFD700 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: relative;
+    animation: headerGradientShift 6s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(253, 184, 19, 0.3);
+    filter: drop-shadow(0 2px 4px rgba(27, 75, 143, 0.2));
+    transition: transform 0.4s ease;
+}
+
+/* Premium gradient animation */
+@keyframes headerGradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Smooth fade-in animation */
+@keyframes headerFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mild aesthetic hover - subtle scale and faster gradient */
+.logo-text h1:hover {
+    transform: scale(1.05);
+    animation: headerGradientShift 3s ease-in-out infinite;
 }
 
 .logo-text p {
