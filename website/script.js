@@ -8,6 +8,7 @@ const navLinks = document.getElementById('navLinks');
 const navLinksItems = document.querySelectorAll('.nav-link');
 const joinButton = document.querySelector('.btn-join');
 const navOverlay = document.getElementById('navOverlay');
+const mobileMenuClose = document.getElementById('mobileMenuClose');
 
 // Navbar scroll effect
 window.addEventListener('scroll', () => {
@@ -57,6 +58,11 @@ hamburger.addEventListener('click', () => {
 
 // Close mobile menu when clicking overlay
 navOverlay.addEventListener('click', closeMobileMenu);
+
+// Close mobile menu when clicking close button
+if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+}
 
 // Close mobile menu when clicking on a nav link
 navLinksItems.forEach(link => {
@@ -1624,15 +1630,21 @@ function openVideoModal(videoId) {
     modal.className = 'video-modal active';
     modal.innerHTML = `
         <div class="video-modal-content">
-            <button class="video-modal-close" id="closeVideoModal">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="video-modal-wrapper">
+            <div class="video-modal-wrapper" id="videoModalWrapper">
+                <button class="video-modal-close" id="closeVideoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button class="video-fullscreen-btn" id="videoFullscreenBtn" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
                 <iframe 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    id="videoIframe"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1" 
                     frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen
+                    webkitallowfullscreen
+                    mozallowfullscreen>
                 </iframe>
             </div>
         </div>
@@ -1641,8 +1653,13 @@ function openVideoModal(videoId) {
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
 
-    // Close modal events
+    // Get elements
     const closeBtn = modal.querySelector('#closeVideoModal');
+    const fullscreenBtn = modal.querySelector('#videoFullscreenBtn');
+    const videoWrapper = modal.querySelector('#videoModalWrapper');
+    const videoIframe = modal.querySelector('#videoIframe');
+
+    // Close modal events
     closeBtn.addEventListener('click', () => closeVideoModal(modal));
     
     modal.addEventListener('click', (e) => {
@@ -1651,17 +1668,98 @@ function openVideoModal(videoId) {
         }
     });
 
+    // Fullscreen button click
+    fullscreenBtn.addEventListener('click', () => {
+        toggleFullscreen(videoWrapper, fullscreenBtn);
+    });
+
     // ESC key to close
     const escHandler = (e) => {
         if (e.key === 'Escape') {
-            closeVideoModal(modal);
-            document.removeEventListener('keydown', escHandler);
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+                closeVideoModal(modal);
+                document.removeEventListener('keydown', escHandler);
+            }
         }
     };
     document.addEventListener('keydown', escHandler);
+
+    // Handle fullscreen change events
+    const fullscreenChangeHandler = () => {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+        const icon = fullscreenBtn.querySelector('i');
+        if (isFullscreen) {
+            icon.className = 'fas fa-compress';
+            fullscreenBtn.title = 'Exit Fullscreen';
+        } else {
+            icon.className = 'fas fa-expand';
+            fullscreenBtn.title = 'Fullscreen';
+        }
+    };
+
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+
+    // Store cleanup function
+    modal.fullscreenCleanup = () => {
+        document.removeEventListener('fullscreenchange', fullscreenChangeHandler);
+        document.removeEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+        document.removeEventListener('mozfullscreenchange', fullscreenChangeHandler);
+    };
+}
+
+// Toggle fullscreen for video
+function toggleFullscreen(element, button) {
+    if (!element) return;
+
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+
+    if (!isFullscreen) {
+        // Enter fullscreen
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
 }
 
 function closeVideoModal(modal) {
+    // Clean up fullscreen event listeners
+    if (modal.fullscreenCleanup) {
+        modal.fullscreenCleanup();
+    }
+    
+    // Exit fullscreen if active
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+    if (isFullscreen) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
     setTimeout(() => {

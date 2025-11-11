@@ -8,6 +8,7 @@ const navLinks = document.getElementById('navLinks');
 const navLinksItems = document.querySelectorAll('.nav-link');
 const joinButton = document.querySelector('.btn-join');
 const navOverlay = document.getElementById('navOverlay');
+const mobileMenuClose = document.getElementById('mobileMenuClose');
 
 // Navbar scroll effect
 window.addEventListener('scroll', () => {
@@ -58,6 +59,11 @@ hamburger.addEventListener('click', () => {
 // Close mobile menu when clicking overlay
 navOverlay.addEventListener('click', closeMobileMenu);
 
+// Close mobile menu when clicking close button
+if (mobileMenuClose) {
+    mobileMenuClose.addEventListener('click', closeMobileMenu);
+}
+
 // Close mobile menu when clicking on a nav link
 navLinksItems.forEach(link => {
     link.addEventListener('click', closeMobileMenu);
@@ -67,6 +73,96 @@ navLinksItems.forEach(link => {
 if (joinButton) {
     joinButton.addEventListener('click', closeMobileMenu);
 }
+
+// ==================== 
+// Swipe to Close Navigation
+// ==================== 
+
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+let isSwiping = false;
+let isClosing = false;
+
+navLinks.addEventListener('touchstart', (e) => {
+    if (isClosing) return;
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    isSwiping = true;
+}, { passive: true });
+
+navLinks.addEventListener('touchmove', (e) => {
+    if (!isSwiping || isClosing) return;
+    
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = Math.abs(touchEndY - touchStartY);
+    
+    // If swiping more horizontally than vertically and to the right
+    if (Math.abs(deltaX) > deltaY && deltaX > 50) {
+        // Prevent scrolling while swiping
+        e.preventDefault();
+        
+        // Visual feedback: move the menu with the swipe
+        const distance = Math.max(0, deltaX);
+        navLinks.style.transform = `translateX(${distance}px)`;
+        navLinks.style.transition = 'none';
+        navLinks.style.opacity = Math.max(0.3, 1 - (distance / 300));
+    }
+}, { passive: false });
+
+navLinks.addEventListener('touchend', (e) => {
+    if (!isSwiping || isClosing) return;
+    
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = Math.abs(touchEndY - touchStartY);
+    
+    // If swipe right more than 100px and more horizontal than vertical
+    if (deltaX > 100 && Math.abs(deltaX) > deltaY) {
+        // Start closing with animation
+        isClosing = true;
+        
+        // Add the closing animation - slide further right
+        navLinks.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 1, 1), opacity 0.25s ease';
+        navLinks.style.transform = 'translateX(100%)';
+        navLinks.style.opacity = '0';
+        
+        // Fade out overlay
+        navOverlay.style.transition = 'opacity 0.25s ease';
+        navOverlay.style.opacity = '0';
+        
+        // Close the menu after animation completes
+        setTimeout(() => {
+            // Close without triggering the CSS transition (skip animation)
+            closeMobileMenu(true);
+            
+            // Reset all inline styles
+            navLinks.style.transform = '';
+            navLinks.style.opacity = '';
+            navOverlay.style.transition = '';
+            navOverlay.style.opacity = '';
+            
+            isClosing = false;
+        }, 250);
+    } else {
+        // Reset transform if swipe wasn't enough - bounce back
+        navLinks.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+        navLinks.style.transform = '';
+        navLinks.style.opacity = '';
+        
+        setTimeout(() => {
+            navLinks.style.transition = '';
+        }, 300);
+    }
+    
+    isSwiping = false;
+}, { passive: true });
 
 // ==================== 
 // Scroll to Top Button
@@ -278,15 +374,21 @@ function openVideoModal(videoId) {
     modal.className = 'video-modal active';
     modal.innerHTML = `
         <div class="video-modal-content">
-            <button class="video-modal-close" id="closeVideoModal">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="video-modal-wrapper">
+            <div class="video-modal-wrapper" id="videoModalWrapper">
+                <button class="video-modal-close" id="closeVideoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button class="video-fullscreen-btn" id="videoFullscreenBtn" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
                 <iframe 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    id="videoIframe"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1" 
                     frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen
+                    webkitallowfullscreen
+                    mozallowfullscreen>
                 </iframe>
             </div>
         </div>
@@ -295,8 +397,13 @@ function openVideoModal(videoId) {
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
 
-    // Close modal events
+    // Get elements
     const closeBtn = modal.querySelector('#closeVideoModal');
+    const fullscreenBtn = modal.querySelector('#videoFullscreenBtn');
+    const videoWrapper = modal.querySelector('#videoModalWrapper');
+    const videoIframe = modal.querySelector('#videoIframe');
+
+    // Close modal events
     closeBtn.addEventListener('click', () => closeVideoModal(modal));
     
     modal.addEventListener('click', (e) => {
@@ -305,17 +412,98 @@ function openVideoModal(videoId) {
         }
     });
 
+    // Fullscreen button click
+    fullscreenBtn.addEventListener('click', () => {
+        toggleFullscreen(videoWrapper, fullscreenBtn);
+    });
+
     // ESC key to close
     const escHandler = (e) => {
         if (e.key === 'Escape') {
-            closeVideoModal(modal);
-            document.removeEventListener('keydown', escHandler);
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+                closeVideoModal(modal);
+                document.removeEventListener('keydown', escHandler);
+            }
         }
     };
     document.addEventListener('keydown', escHandler);
+
+    // Handle fullscreen change events
+    const fullscreenChangeHandler = () => {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+        const icon = fullscreenBtn.querySelector('i');
+        if (isFullscreen) {
+            icon.className = 'fas fa-compress';
+            fullscreenBtn.title = 'Exit Fullscreen';
+        } else {
+            icon.className = 'fas fa-expand';
+            fullscreenBtn.title = 'Fullscreen';
+        }
+    };
+
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler);
+
+    // Store cleanup function
+    modal.fullscreenCleanup = () => {
+        document.removeEventListener('fullscreenchange', fullscreenChangeHandler);
+        document.removeEventListener('webkitfullscreenchange', fullscreenChangeHandler);
+        document.removeEventListener('mozfullscreenchange', fullscreenChangeHandler);
+    };
+}
+
+// Toggle fullscreen for video
+function toggleFullscreen(element, button) {
+    if (!element) return;
+
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+
+    if (!isFullscreen) {
+        // Enter fullscreen
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
 }
 
 function closeVideoModal(modal) {
+    // Clean up fullscreen event listeners
+    if (modal.fullscreenCleanup) {
+        modal.fullscreenCleanup();
+    }
+    
+    // Exit fullscreen if active
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+    if (isFullscreen) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
     setTimeout(() => {

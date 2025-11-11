@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1B4B8F">
+    <meta name="screen-orientation" content="any">
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="public/icon-192.png">
@@ -30,16 +31,22 @@
     <nav class="navbar" id="navbar">
         <div class="container">
             <div class="nav-wrapper">
-                <div class="logo">
+                <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">
                     <div class="logo-icon">অ</div>
                     <div class="logo-text">
                         <h1>অনুরণন</h1>
                     </div>
-                </div>
+                </a>
                 <div class="nav-links" id="navLinks">
                     <div class="mobile-menu-header">
                         <h1>অনুরণন</h1>
+                        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close Menu">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
+                    <div class="mobile-menu-divider"></div>
                     <div class="nav-swipe-indicator"></div>
                     <a href="#home" class="nav-link active">Home</a>
                     <a href="#about" class="nav-link">About Us</a>

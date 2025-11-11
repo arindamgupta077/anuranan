@@ -1,10 +1,12 @@
-const CACHE_NAME = 'anuranan-v2';
+const CACHE_NAME = 'anuranan-v4-fullscreen-fix';
 const urlsToCache = [
   '/',
   '/index.html',
   '/styles.css',
   '/script.js',
   '/supabase-loader.js',
+  '/videos.html',
+  '/videos.js',
   'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
