@@ -5445,9 +5445,157 @@ section {
 @media print {
     .navbar,
     .scroll-top,
+    .google-review-float,
     .hero-buttons,
     .btn,
     .hamburger {
         display: none;
     }
 }
+
+/* ==================== 
+   Google Review Styles 
+   ==================== */
+
+/* Google Review Card in Contact Section */
+.google-review-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    border: 2px solid var(--primary-yellow);
+    box-shadow: 0 4px 15px rgba(253, 184, 19, 0.2);
+}
+
+.google-review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(253, 184, 19, 0.3);
+}
+
+.google-review-card .info-icon {
+    background: linear-gradient(135deg, #4285f4, #34a853);
+}
+
+.google-review-card .info-icon i {
+    color: white;
+}
+
+.btn-google-review {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.btn-google-review:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    background: linear-gradient(135deg, #3367d6, #2d8e47);
+}
+
+.btn-google-review i {
+    font-size: 18px;
+}
+
+/* Floating Google Review Button */
+.google-review-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    color: white;
+    padding: 14px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    animation: pulse-review 2s infinite;
+}
+
+.google-review-float:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.5);
+    animation: none;
+}
+
+.google-review-float i {
+    font-size: 20px;
+}
+
+.review-text {
+    white-space: nowrap;
+}
+
+@keyframes pulse-review {
+    0%, 100% {
+        box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+    50% {
+        box-shadow: 0 6px 30px rgba(66, 133, 244, 0.6);
+    }
+}
+
+/* Mobile Responsive for Google Review Button */
+@media (max-width: 768px) {
+    /* Hide floating button on mobile */
+    .google-review-float {
+        display: none;
+    }
+
+    .btn-google-review {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+    
+    /* Mobile navigation review link */
+    .mobile-review-link {
+        background: linear-gradient(135deg, #4285f4, #34a853) !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-weight: 600;
+        display: flex !important;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-review-link:hover {
+        background: linear-gradient(135deg, #3367d6, #2d8e47) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+    
+    .mobile-review-link i {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .google-review-float {
+        display: none;
+    }
+}
+
+/* Hide mobile review link on desktop */
+@media (min-width: 769px) {
+    .mobile-review-link {
+        display: none !important;
+    }
+}
+
