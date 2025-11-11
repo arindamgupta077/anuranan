@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1B4B8F">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="public/icon-192.png">
+    <!-- Cache Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Teaching Videos | Anuranan Recitation Training Institute</title>
+    <link rel="stylesheet" href="styles.css?v=202511102055">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Mobile Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <div class="logo-icon">অ</div>
+                    <div class="logo-text">
+                        <h1>অনুরণন</h1>
+                    </div>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <div class="mobile-menu-header">
+                        <h1>অনুরণন</h1>
+                    </div>
+                    <div class="nav-swipe-indicator"></div>
+                    <a href="index.html#home" class="nav-link">Home</a>
+                    <a href="index.html#about" class="nav-link">About Us</a>
+                    <a href="index.html#courses" class="nav-link">Courses</a>
+                    <a href="index.html#class-details" class="nav-link">Class Details</a>
+                    <a href="index.html#gallery" class="nav-link">Gallery</a>
+                    <a href="videos.html" class="nav-link active">Videos</a>
+                    <a href="index.html#events" class="nav-link">Events</a>
+                    <a href="index.html#contact" class="nav-link">Contact</a>
+                    <a href="index.html#contact" class="btn-join">Join Now</a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="hero-pattern"></div>
+        <div class="container">
+            <h1 class="page-title">Teaching <span class="highlight">Videos</span></h1>
+            <p class="page-subtitle">Explore our collection of instructional videos and performances</p>
+        </div>
+    </div>
+
+    <!-- YouTube Videos Section -->
+    <section id="videos" class="videos-section">
+        <div class="container">
+            <div id="videosGrid" class="videos-grid">
+                <!-- Videos will be loaded from admin panel via Supabase -->
+                <div class="no-items-message">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading videos...</p>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="videos-pagination" id="videosPagination"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="bengali-pattern-decoration"></div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <div class="logo-icon">অ</div>
+                        <div>
+                            <h3>অনুরণন</h3>
+                            <p>Anuranan</p>
+                        </div>
+                    </div>
+                    <p class="footer-desc">
+                        Celebrating Bengali culture through the art of recitation, 
+                        anchoring, and performance. Join us in keeping the literary 
+                        heritage alive.
+                    </p>
+                    <div class="cultural-tagline">
+                        <p class="bengali-text">সাহিত্য ও শিল্পের সেবায় নিয়োজিত</p>
+                        <p>Dedicated to Literature and Arts</p>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html#home">Home</a></li>
+                        <li><a href="index.html#about">About Us</a></li>
+                        <li><a href="index.html#courses">Courses</a></li>
+                        <li><a href="index.html#gallery">Gallery</a></li>
+                        <li><a href="index.html#events">Events</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Our Courses</h4>
+                    <ul class="footer-links footer-courses-list">
+                        <!-- Courses will be dynamically loaded -->
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Connect With Us</h4>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/arc008303" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/anuranan_recitation_training?igsh=MWtqb3M4cWUzMDI4bg==" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@snehasreebhore" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                        <a href="https://whatsapp.com/channel/0029VbBdwh4LtOjG68w57D37" class="social-icon" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                    <p class="footer-contact">
+                        <i class="fas fa-phone"></i> <a href="tel:+918910621825">+91-8910621825</a><br>
+                        <i class="fas fa-envelope"></i> <a href="mailto:anurananinstitute@gmail.com">anurananinstitute@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Anuranan Recitation Training Institute. All rights reserved.</p>
+                <p>Designed with <i class="fas fa-heart"></i> for Bengali Culture</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTop" class="scroll-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="videos.js"></script>
+    <script src="supabase-loader.js?v=202511102038"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

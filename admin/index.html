@@ -163,6 +163,10 @@
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Edit Class Details</span>
                 </a>
+                <a href="#videos-management" class="menu-item" data-section="videos">
+                    <i class="fas fa-video"></i>
+                    <span>YouTube Videos</span>
+                </a>
                 <a href="#messages-management" class="menu-item" data-section="messages">
                     <i class="fas fa-envelope"></i>
                     <span>Contact Messages</span>
@@ -221,6 +225,16 @@
                         <div class="stat-info">
                             <h3 id="totalClasses">0</h3>
                             <p>Class Details</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fff9c4;">
+                            <i class="fas fa-video" style="color: #fbc02d;"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalVideos">0</h3>
+                            <p>YouTube Videos</p>
                         </div>
                     </div>
 
@@ -286,6 +300,16 @@
                             <div class="qa-text">
                                 <h4>Add Class</h4>
                                 <p>Create class details</p>
+                            </div>
+                        </button>
+
+                        <button class="quick-action-card" data-action="add-video">
+                            <div class="qa-icon" style="background: #fff9c4; color: #fbc02d;">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="qa-text">
+                                <h4>Add Video</h4>
+                                <p>Upload YouTube video</p>
                             </div>
                         </button>
 
@@ -393,6 +417,30 @@
                     <!-- Class items will be loaded here -->
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i> Loading class details...
+                    </div>
+                </div>
+            </section>
+
+            <!-- YouTube Videos Management Section -->
+            <section id="videos-management" class="management-section">
+                <div class="section-header-admin">
+                    <h2><i class="fas fa-video"></i> YouTube Videos Management</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn-refresh" id="refreshVideosBtn" title="Refresh videos">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn-add" id="addVideoBtn">
+                            <i class="fas fa-plus"></i> Add Video
+                        </button>
+                    </div>
+                </div>
+
+                <div class="admin-content-wrapper">
+                    <!-- Videos List -->
+                    <div class="items-grid" id="videosGrid">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> Loading videos...
+                        </div>
                     </div>
                 </div>
             </section>
@@ -731,6 +779,111 @@
                         <button type="button" class="btn-cancel" data-modal="courseModal">Cancel</button>
                         <button type="submit" class="btn-save">
                             <i class="fas fa-save"></i> <span id="submitBtnText">Save Course</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="videoModalTitle">Add YouTube Video</h3>
+                <button class="modal-close" data-modal="videoModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="videoForm" class="modal-form">
+                    <input type="hidden" id="videoId">
+                    
+                    <div class="form-group">
+                        <label for="youtubeUrl">
+                            YouTube URL <span style="color: red;">*</span>
+                        </label>
+                        <div style="position: relative;">
+                            <input 
+                                type="url" 
+                                id="youtubeUrl" 
+                                placeholder="https://www.youtube.com/watch?v=..." 
+                                required
+                                style="padding-right: 100px;"
+                            >
+                            <button 
+                                type="button" 
+                                id="extractBtn" 
+                                style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); 
+                                       background: var(--primary-yellow); color: var(--primary-blue); 
+                                       border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; 
+                                       font-size: 12px; font-weight: 600;"
+                            >
+                                <i class="fas fa-magic"></i> Auto-fill
+                            </button>
+                        </div>
+                        <small style="display: block; margin-top: 5px; color: #666;">
+                            <i class="fas fa-info-circle"></i> Paste the full YouTube video URL
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoTitle">
+                            Video Title <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="videoTitle" 
+                            placeholder="Enter video title" 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoDescription">Description</label>
+                        <textarea 
+                            id="videoDescription" 
+                            placeholder="Enter video description (optional)"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="videoDisplayOrder">Display Order</label>
+                            <input 
+                                type="number" 
+                                id="videoDisplayOrder" 
+                                placeholder="0" 
+                                min="0"
+                                value="0"
+                            >
+                            <small style="display: block; margin-top: 5px; color: #666;">
+                                Lower numbers appear first
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="videoIsActive">Status</label>
+                            <select id="videoIsActive">
+                                <option value="true">Active (Visible on website)</option>
+                                <option value="false">Inactive (Hidden)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="videoPreviewSection" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 15px; display: none;">
+                        <h4 style="margin-bottom: 10px; color: var(--primary-blue);">
+                            <i class="fas fa-eye"></i> Preview
+                        </h4>
+                        <img id="videoThumbnailPreview" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Video thumbnail">
+                        <p id="videoIdPreview" style="margin-top: 10px; font-size: 13px; color: #666;"></p>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-modal="videoModal">Cancel</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> Save Video
                         </button>
                     </div>
                 </form>

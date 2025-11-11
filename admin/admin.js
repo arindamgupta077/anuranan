@@ -45,6 +45,7 @@ async function checkAuth() {
         loadEventItems();
         loadCourses();
         loadClassItems();
+        loadVideos();
         loadContactMessages();
     } else {
         currentUser = null;
@@ -68,11 +69,12 @@ async function loadDashboardData() {
 async function loadDashboardStats() {
     try {
         // Fetch counts - gallery and events from storage, others from tables
-        const [galleryData, eventsData, coursesCount, classesCount, messagesCount, unreadCount] = await Promise.all([
+        const [galleryData, eventsData, coursesCount, classesCount, videosCount, messagesCount, unreadCount] = await Promise.all([
             supabase.storage.from(GALLERY_BUCKET).list('', { limit: 1000 }),
             supabase.storage.from(EVENTS_BUCKET).list('', { limit: 1000 }),
             supabase.from('courses').select('*', { count: 'exact', head: true }),
             supabase.from('class_details').select('*', { count: 'exact', head: true }),
+            supabase.from('youtube_videos').select('*', { count: 'exact', head: true }),
             supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
             supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('read', false)
         ]);
@@ -82,6 +84,7 @@ async function loadDashboardStats() {
             events: eventsData,
             courses: coursesCount,
             classes: classesCount,
+            videos: videosCount,
             messages: messagesCount,
             unread: unreadCount
         });
@@ -95,6 +98,7 @@ async function loadDashboardStats() {
         document.getElementById('totalEvents').textContent = eventsCount;
         document.getElementById('totalCourses').textContent = coursesCount.count || 0;
         document.getElementById('totalClasses').textContent = classesCount.count || 0;
+        document.getElementById('totalVideos').textContent = videosCount.count || 0;
         document.getElementById('totalMessages').textContent = messagesCount.count || 0;
         document.getElementById('unreadMessages').textContent = unreadCount.count || 0;
     } catch (error) {
@@ -191,6 +195,10 @@ document.querySelectorAll('.quick-action-card').forEach(card => {
                 case 'add-class':
                     document.querySelector(`.menu-item[data-section="class-details"]`)?.click();
                     setTimeout(() => document.getElementById('addClassBtn')?.click(), 100);
+                    break;
+                case 'add-video':
+                    document.querySelector(`.menu-item[data-section="videos"]`)?.click();
+                    setTimeout(() => document.getElementById('addVideoBtn')?.click(), 100);
                     break;
                 case 'view-site':
                     window.open('index.html', '_blank');
@@ -1869,6 +1877,370 @@ window.editCourse = editCourse;
 window.toggleCourse = toggleCourse;
 window.deleteCourse = deleteCourse;
 window.loadCourses = loadCourses;
+
+// ==================== 
+// YouTube Videos Management
+// ==================== 
+
+let currentVideoId = null;
+
+// Load videos
+async function loadVideos() {
+    const videosGrid = document.getElementById('videosGrid');
+    
+    try {
+        const { data: videos, error } = await supabase
+            .from('youtube_videos')
+            .select('*')
+            .order('display_order', { ascending: true });
+
+        if (error) throw error;
+
+        if (!videos || videos.length === 0) {
+            videosGrid.innerHTML = `
+                <div class="no-items" style="grid-column: 1 / -1;">
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-video" style="font-size: 64px; color: #e0e0e0; margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--primary-blue); margin-bottom: 10px;">No Videos Yet</h3>
+                        <p style="color: #6c757d; margin-bottom: 20px;">Start by adding your first YouTube video to showcase on your website.</p>
+                        <button onclick="document.getElementById('addVideoBtn').click()" 
+                                style="background: linear-gradient(135deg, var(--primary-blue), #1e5ba8); 
+                                       color: white; border: none; padding: 12px 24px; border-radius: 8px; 
+                                       font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-plus"></i> Add Your First Video
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        videosGrid.innerHTML = videos.map(video => {
+            const thumbnailUrl = video.thumbnail_url || `https://img.youtube.com/vi/${video.youtube_id}/maxresdefault.jpg`;
+            const statusBadge = video.is_active 
+                ? '<span class="video-status-badge active"><i class="fas fa-check-circle"></i> Active</span>' 
+                : '<span class="video-status-badge inactive"><i class="fas fa-times-circle"></i> Inactive</span>';
+            const toggleIcon = video.is_active ? 'fa-eye-slash' : 'fa-eye';
+            const toggleText = video.is_active ? 'Hide' : 'Show';
+
+            return `
+                <div class="video-card">
+                    <div class="video-card-thumbnail">
+                        <img src="${thumbnailUrl}" alt="${video.title}" 
+                             onerror="this.src='https://via.placeholder.com/400x225?text=No+Thumbnail'"
+                             loading="lazy">
+                        <div class="video-play-overlay">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="video-card-content">
+                        <h3 class="video-card-title">${video.title}</h3>
+                        ${video.description ? `<p class="video-card-description">${video.description.substring(0, 100)}${video.description.length > 100 ? '...' : ''}</p>` : '<p class="video-card-description no-description">No description</p>'}
+                        <div class="video-card-meta">
+                            <span class="video-meta-item">
+                                <i class="fas fa-sort-numeric-down"></i> Order: ${video.display_order}
+                            </span>
+                            <span class="video-meta-item">
+                                <i class="fab fa-youtube"></i> ${video.youtube_id}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="video-card-actions">
+                        <button class="video-action-btn edit" onclick="editVideo('${video.id}')" title="Edit video">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="video-action-btn toggle ${video.is_active ? 'active' : 'inactive'}" 
+                                onclick="toggleVideoStatus('${video.id}', ${!video.is_active})" 
+                                title="${toggleText} video">
+                            <i class="fas ${toggleIcon}"></i> ${toggleText}
+                        </button>
+                        <button class="video-action-btn delete" 
+                                onclick="deleteVideo('${video.id}', '${video.title.replace(/'/g, "\\'")}')" 
+                                title="Delete video">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Error loading videos:', error);
+        videosGrid.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Error loading videos. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+// Extract YouTube ID
+function extractYoutubeId(url) {
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/,
+        /youtube\.com\/shorts\/([^&\?\/]+)/
+    ];
+
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+    }
+    return null;
+}
+
+// Handle URL input
+function handleVideoUrlInput() {
+    const url = document.getElementById('youtubeUrl').value.trim();
+    if (url) {
+        const videoId = extractYoutubeId(url);
+        if (videoId) {
+            showVideoPreview(videoId);
+        }
+    }
+}
+
+// Extract and preview video
+function extractVideoInfo() {
+    const url = document.getElementById('youtubeUrl').value.trim();
+    
+    if (!url) {
+        alert('Please enter a YouTube URL');
+        return;
+    }
+
+    const videoId = extractYoutubeId(url);
+    
+    if (!videoId) {
+        alert('Invalid YouTube URL. Please check and try again.');
+        return;
+    }
+
+    showVideoPreview(videoId);
+    fetchVideoTitle(videoId);
+}
+
+// Show video preview
+function showVideoPreview(videoId) {
+    const preview = document.getElementById('videoPreviewSection');
+    const thumbnail = document.getElementById('videoThumbnailPreview');
+    const videoIdText = document.getElementById('videoIdPreview');
+    
+    thumbnail.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    videoIdText.textContent = `YouTube ID: ${videoId}`;
+    preview.style.display = 'block';
+}
+
+// Fetch video title
+async function fetchVideoTitle(videoId) {
+    try {
+        const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+        const data = await response.json();
+        
+        if (data.title && !document.getElementById('videoTitle').value) {
+            document.getElementById('videoTitle').value = data.title;
+        }
+    } catch (error) {
+        console.log('Could not auto-fetch video title:', error);
+    }
+}
+
+// Edit video
+async function editVideo(videoId) {
+    try {
+        const { data: video, error } = await supabase
+            .from('youtube_videos')
+            .select('*')
+            .eq('id', videoId)
+            .single();
+
+        if (error) throw error;
+
+        currentVideoId = videoId;
+        document.getElementById('videoId').value = videoId;
+        document.getElementById('youtubeUrl').value = video.youtube_url;
+        document.getElementById('videoTitle').value = video.title;
+        document.getElementById('videoDescription').value = video.description || '';
+        document.getElementById('videoDisplayOrder').value = video.display_order;
+        document.getElementById('videoIsActive').value = video.is_active.toString();
+
+        showVideoPreview(video.youtube_id);
+        
+        document.getElementById('videoModalTitle').textContent = 'Edit Video';
+        openModal('videoModal');
+    } catch (error) {
+        console.error('Error loading video:', error);
+        alert('Error loading video for editing');
+    }
+}
+
+// Toggle video status
+async function toggleVideoStatus(videoId, newStatus) {
+    try {
+        const { error } = await supabase
+            .from('youtube_videos')
+            .update({ is_active: newStatus })
+            .eq('id', videoId);
+
+        if (error) throw error;
+
+        showToast(newStatus ? 'Video activated!' : 'Video deactivated!');
+        loadVideos();
+        loadDashboardStats();
+    } catch (error) {
+        console.error('Error toggling video status:', error);
+        alert('Error updating video status');
+    }
+}
+
+// Delete video
+async function deleteVideo(videoId, title) {
+    if (!confirm(`Are you sure you want to delete "${title}"?\n\nThis action cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const { error } = await supabase
+            .from('youtube_videos')
+            .delete()
+            .eq('id', videoId);
+
+        if (error) throw error;
+
+        showToast('Video deleted successfully!');
+        loadVideos();
+        loadDashboardStats();
+        
+        if (currentVideoId === videoId) {
+            closeModal('videoModal');
+            resetVideoForm();
+        }
+    } catch (error) {
+        console.error('Error deleting video:', error);
+        alert('Error deleting video');
+    }
+}
+
+// Reset video form
+function resetVideoForm() {
+    currentVideoId = null;
+    document.getElementById('videoForm').reset();
+    document.getElementById('videoId').value = '';
+    document.getElementById('videoDisplayOrder').value = '0';
+    document.getElementById('videoModalTitle').textContent = 'Add YouTube Video';
+    document.getElementById('videoPreviewSection').style.display = 'none';
+}
+
+// Make video functions globally available
+window.editVideo = editVideo;
+window.toggleVideoStatus = toggleVideoStatus;
+window.deleteVideo = deleteVideo;
+window.loadVideos = loadVideos;
+
+// Video button event listeners
+const addVideoBtn = document.getElementById('addVideoBtn');
+if (addVideoBtn) {
+    addVideoBtn.addEventListener('click', () => {
+        resetVideoForm();
+        openModal('videoModal');
+    });
+}
+
+const refreshVideosBtn = document.getElementById('refreshVideosBtn');
+if (refreshVideosBtn) {
+    refreshVideosBtn.addEventListener('click', () => {
+        const icon = refreshVideosBtn.querySelector('i');
+        icon.classList.add('fa-spin');
+        refreshVideosBtn.disabled = true;
+        
+        loadVideos().then(() => {
+            icon.classList.remove('fa-spin');
+            refreshVideosBtn.disabled = false;
+            showToast('Videos refreshed successfully');
+        }).catch(() => {
+            icon.classList.remove('fa-spin');
+            refreshVideosBtn.disabled = false;
+            showToast('Error refreshing videos', true);
+        });
+    });
+}
+
+const extractBtn = document.getElementById('extractBtn');
+if (extractBtn) {
+    extractBtn.addEventListener('click', extractVideoInfo);
+}
+
+const youtubeUrlInput = document.getElementById('youtubeUrl');
+if (youtubeUrlInput) {
+    youtubeUrlInput.addEventListener('input', handleVideoUrlInput);
+}
+
+const videoForm = document.getElementById('videoForm');
+if (videoForm) {
+    videoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const url = document.getElementById('youtubeUrl').value.trim();
+        const title = document.getElementById('videoTitle').value.trim();
+        const description = document.getElementById('videoDescription').value.trim();
+        const displayOrder = parseInt(document.getElementById('videoDisplayOrder').value) || 0;
+        const isActive = document.getElementById('videoIsActive').value === 'true';
+
+        const youtubeId = extractYoutubeId(url);
+        
+        if (!youtubeId) {
+            alert('Invalid YouTube URL');
+            return;
+        }
+
+        const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+
+        const videoData = {
+            youtube_url: url,
+            youtube_id: youtubeId,
+            title: title,
+            description: description || null,
+            thumbnail_url: thumbnailUrl,
+            display_order: displayOrder,
+            is_active: isActive
+        };
+
+        try {
+            const submitBtn = e.target.querySelector('.btn-save');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            let result;
+            
+            if (currentVideoId) {
+                result = await supabase
+                    .from('youtube_videos')
+                    .update(videoData)
+                    .eq('id', currentVideoId);
+            } else {
+                result = await supabase
+                    .from('youtube_videos')
+                    .insert([videoData]);
+            }
+
+            if (result.error) throw result.error;
+
+            showToast(currentVideoId ? 'Video updated successfully!' : 'Video added successfully!');
+            closeModal('videoModal');
+            resetVideoForm();
+            loadVideos();
+            loadDashboardStats();
+        } catch (error) {
+            console.error('Error saving video:', error);
+            alert('Error saving video: ' + error.message);
+        } finally {
+            const submitBtn = e.target.querySelector('.btn-save');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Video';
+        }
+    });
+}
 
 // ==================== 
 // Initialize

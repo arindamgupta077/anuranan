@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anuranan-v1';
+const CACHE_NAME = 'anuranan-v2';
 const urlsToCache = [
   '/',
   '/index.html',

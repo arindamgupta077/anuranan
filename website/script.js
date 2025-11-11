@@ -63,10 +63,31 @@ navLinksItems.forEach(link => {
     link.addEventListener('click', closeMobileMenu);
 });
 
-// Close mobile menu when clicking Join Now button
+// Close mobile menu when clicking Join Now button and open contact modal
 if (joinButton) {
-    joinButton.addEventListener('click', closeMobileMenu);
+    joinButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeMobileMenu();
+        // Small delay to ensure smooth transition
+        setTimeout(() => {
+            openContactModal();
+        }, 100);
+    });
 }
+
+// Handle all "Join Now" buttons on the page
+document.addEventListener('DOMContentLoaded', () => {
+    const allJoinButtons = document.querySelectorAll('.btn-secondary, .btn-join');
+    allJoinButtons.forEach(button => {
+        // Only add listener if button text contains "Join Now"
+        if (button.textContent.trim() === 'Join Now') {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                openContactModal();
+            });
+        }
+    });
+});
 
 // ==================== 
 // Swipe to Close Navigation
@@ -1498,6 +1519,156 @@ function addEnrollButtonListeners() {
     });
 }
 
+// ==================== 
+// YouTube Videos Dynamic Loading
+// ==================== 
+
+async function loadVideos() {
+    try {
+        // Check if Supabase is loaded
+        if (typeof supabaseClient === 'undefined') {
+            console.error('Supabase client not loaded');
+            return;
+        }
+
+        // Fetch videos from Supabase
+        const { data: videos, error } = await supabaseClient
+            .from('youtube_videos')
+            .select('*')
+            .eq('is_active', true)
+            .order('display_order', { ascending: true });
+
+        if (error) {
+            console.error('Error loading videos:', error);
+            return;
+        }
+
+        if (videos && videos.length > 0) {
+            renderVideos(videos);
+        } else {
+            // Show "no videos" message
+            const videosGrid = document.getElementById('videosGrid');
+            if (videosGrid) {
+                videosGrid.innerHTML = `
+                    <div class="no-items-message">
+                        <i class="fas fa-video"></i>
+                        <p>No videos available at the moment</p>
+                    </div>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading videos:', error);
+    }
+}
+
+function renderVideos(videos) {
+    const videosGrid = document.getElementById('videosGrid');
+    if (!videosGrid) return;
+
+    videosGrid.innerHTML = videos.map(video => {
+        // Extract YouTube ID from URL if not provided
+        let youtubeId = video.youtube_id;
+        if (!youtubeId && video.youtube_url) {
+            const match = video.youtube_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\/]+)/);
+            if (match) {
+                youtubeId = match[1];
+            }
+        }
+
+        // Generate thumbnail URL
+        const thumbnailUrl = video.thumbnail_url || `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+
+        return `
+            <div class="video-card fade-in">
+                <div class="video-thumbnail" data-video-id="${youtubeId}">
+                    <img src="${thumbnailUrl}" alt="${video.title}" loading="lazy">
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3>${video.title}</h3>
+                    ${video.description ? `<p>${video.description}</p>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Re-trigger fade-in animations
+    const cards = videosGrid.querySelectorAll('.fade-in');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Add click event to play video
+    addVideoClickListeners();
+}
+
+function addVideoClickListeners() {
+    const videoThumbnails = document.querySelectorAll('.video-thumbnail');
+    videoThumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', () => {
+            const videoId = thumbnail.getAttribute('data-video-id');
+            openVideoModal(videoId);
+        });
+    });
+}
+
+function openVideoModal(videoId) {
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'video-modal active';
+    modal.innerHTML = `
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="closeVideoModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="video-modal-wrapper">
+                <iframe 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+
+    // Close modal events
+    const closeBtn = modal.querySelector('#closeVideoModal');
+    closeBtn.addEventListener('click', () => closeVideoModal(modal));
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeVideoModal(modal);
+        }
+    });
+
+    // ESC key to close
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeVideoModal(modal);
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+function closeVideoModal(modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    setTimeout(() => {
+        modal.remove();
+    }, 300);
+}
+
 function openContactModal(selectedCourse = '') {
     const modal = document.getElementById('contactModal');
     const modalCourseDropdown = document.getElementById('modal-course');
@@ -1556,6 +1727,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load courses when page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadCourses();
+    loadVideos();
 });
 
 // ==================== 
