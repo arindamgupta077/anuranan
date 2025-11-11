@@ -357,7 +357,7 @@ function initializeGalleryPagination() {
     document.addEventListener('keydown', galleryKeyboardHandler);
 }
 
-function showGalleryPage(pageIndex) {
+function showGalleryPage(pageIndex, direction = 'next') {
     const galleryItems = document.querySelectorAll('.gallery-item');
     const prevBtn = document.getElementById('galleryPrev');
     const nextBtn = document.getElementById('galleryNext');
@@ -365,41 +365,43 @@ function showGalleryPage(pageIndex) {
     
     const startIndex = pageIndex * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const direction = pageIndex > currentGalleryPage ? 'next' : 'prev';
     
-    // First, fade out current items with slide animation
+    // First, fade out and slide out current items
     galleryItems.forEach((item, index) => {
-        if (!item.classList.contains('hidden')) {
-            item.style.opacity = '0';
-            item.style.transform = direction === 'next' ? 'translateX(-30px)' : 'translateX(30px)';
+        if (item.classList.contains('visible')) {
+            item.classList.add('gallery-exit');
+            item.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
         }
     });
     
-    // After fade out, hide old items and show new ones
+    // After exit animation, show new items with entrance animation
     setTimeout(() => {
         galleryItems.forEach((item, index) => {
+            // Remove all animation classes first
+            item.classList.remove('gallery-exit', 'slide-out-left', 'slide-out-right', 'gallery-enter', 'slide-in-left', 'slide-in-right');
+            
             if (index >= startIndex && index < endIndex) {
                 item.classList.remove('hidden');
-                // Start with offset position for slide-in effect
-                item.style.transform = direction === 'next' ? 'translateX(30px)' : 'translateX(-30px)';
-                item.style.opacity = '0';
+                item.classList.add('gallery-enter');
+                item.classList.add(direction === 'next' ? 'slide-in-right' : 'slide-in-left');
                 
-                // Stagger the animation for each item
+                // Stagger the entrance animation for each item
+                const delay = (index - startIndex) * 80;
+                item.style.animationDelay = `${delay}ms`;
+                
                 setTimeout(() => {
                     item.classList.add('visible');
-                    item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    item.style.opacity = '1';
-                    item.style.transform = 'translateX(0)';
-                }, index % itemsPerPage * 50); // 50ms delay between each item
+                    item.classList.remove('gallery-enter', 'slide-in-left', 'slide-in-right');
+                    item.style.animationDelay = '';
+                }, 400 + delay);
             } else {
                 item.classList.remove('visible');
                 item.classList.add('hidden');
-                item.style.opacity = '0';
             }
         });
-    }, 300); // Wait for fade out to complete
+    }, 300);
     
-    // Update pagination dots with animation
+    // Update pagination dots
     document.querySelectorAll('.pagination-dot').forEach((dot, index) => {
         dot.classList.toggle('active', index === pageIndex);
     });
@@ -412,7 +414,8 @@ function showGalleryPage(pageIndex) {
 }
 
 function goToGalleryPage(pageIndex) {
-    showGalleryPage(pageIndex);
+    const direction = pageIndex > currentGalleryPage ? 'next' : 'prev';
+    showGalleryPage(pageIndex, direction);
     
     // Scroll to gallery if needed
     const gallerySection = document.getElementById('gallery');
