@@ -1099,6 +1099,125 @@ window.addEventListener('scroll', () => {
 // Class Details Section
 // ==================== 
 
+// Image Carousel functionality
+function initClassCarousel() {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    const indicators = document.querySelectorAll('.indicator');
+    let currentSlide = 0;
+    let autoSlideInterval;
+
+    if (!slides.length) return;
+
+    function showSlide(index) {
+        // Remove active class from all slides and indicators
+        slides.forEach(slide => {
+            slide.classList.remove('active', 'prev');
+        });
+        indicators.forEach(indicator => {
+            indicator.classList.remove('active');
+        });
+
+        // Add active class to current slide and indicator
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+
+        // Add prev class to previous slide for smooth transition
+        const prevIndex = (index - 1 + slides.length) % slides.length;
+        slides[prevIndex].classList.add('prev');
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        showSlide(currentSlide);
+    }
+
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+    }
+
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+
+    // Event listeners
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            stopAutoSlide();
+            startAutoSlide(); // Restart auto-slide after manual navigation
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            stopAutoSlide();
+            startAutoSlide();
+        });
+    }
+
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            goToSlide(index);
+            stopAutoSlide();
+            startAutoSlide();
+        });
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const carousel = document.querySelector('.class-carousel');
+
+    if (carousel) {
+        carousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swiped left - next slide
+                    nextSlide();
+                } else {
+                    // Swiped right - previous slide
+                    prevSlide();
+                }
+                stopAutoSlide();
+                startAutoSlide();
+            }
+        }
+
+        // Pause auto-slide on hover
+        carousel.addEventListener('mouseenter', stopAutoSlide);
+        carousel.addEventListener('mouseleave', startAutoSlide);
+    }
+
+    // Initialize carousel
+    showSlide(currentSlide);
+    startAutoSlide();
+}
+
 async function loadClassDetails() {
     const container = document.getElementById('classScheduleList');
     
@@ -1215,6 +1334,7 @@ function displayClassDetails(classes) {
 // Load class details when page loads
 document.addEventListener('DOMContentLoaded', () => {
     loadClassDetails();
+    initClassCarousel(); // Initialize image carousel
 });
 
 // ==================== 
