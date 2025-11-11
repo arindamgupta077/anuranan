@@ -105,6 +105,10 @@ fadeElements.forEach(element => {
 let currentGalleryPage = 0;
 const itemsPerPage = 6;
 let totalGalleryItems = 0;
+let galleryInitialized = false;
+let galleryKeyboardHandler = null;
+let touchStartHandler = null;
+let touchEndHandler = null;
 
 function initializeGalleryPagination() {
     const galleryGrid = document.querySelector('.gallery-grid');
@@ -117,6 +121,9 @@ function initializeGalleryPagination() {
     
     totalGalleryItems = galleryItems.length;
     const totalPages = Math.ceil(totalGalleryItems / itemsPerPage);
+    
+    // Reset to first page when reinitializing
+    currentGalleryPage = 0;
     
     // Create pagination dots
     paginationContainer.innerHTML = '';
@@ -131,31 +138,64 @@ function initializeGalleryPagination() {
     // Show initial page
     showGalleryPage(0);
     
-    // Navigation buttons
-    prevBtn.addEventListener('click', () => {
-        if (currentGalleryPage > 0) {
-            goToGalleryPage(currentGalleryPage - 1);
-        }
-    });
-    
-    nextBtn.addEventListener('click', () => {
-        if (currentGalleryPage < totalPages - 1) {
-            goToGalleryPage(currentGalleryPage + 1);
-        }
-    });
+    // Remove old event listeners by cloning buttons (only if already initialized)
+    if (galleryInitialized) {
+        const newPrevBtn = prevBtn.cloneNode(true);
+        const newNextBtn = nextBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+        
+        // Update references
+        const updatedPrevBtn = document.getElementById('galleryPrev');
+        const updatedNextBtn = document.getElementById('galleryNext');
+        
+        // Navigation buttons
+        updatedPrevBtn.addEventListener('click', () => {
+            if (currentGalleryPage > 0) {
+                goToGalleryPage(currentGalleryPage - 1);
+            }
+        });
+        
+        updatedNextBtn.addEventListener('click', () => {
+            if (currentGalleryPage < totalPages - 1) {
+                goToGalleryPage(currentGalleryPage + 1);
+            }
+        });
+    } else {
+        // First time initialization
+        prevBtn.addEventListener('click', () => {
+            if (currentGalleryPage > 0) {
+                goToGalleryPage(currentGalleryPage - 1);
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentGalleryPage < totalPages - 1) {
+                goToGalleryPage(currentGalleryPage + 1);
+            }
+        });
+        
+        galleryInitialized = true;
+    }
     
     // Touch/Swipe support
     let touchStartX = 0;
     let touchEndX = 0;
     
-    galleryGrid.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+    // Remove old touch handlers if reinitializing
+    if (touchStartHandler && touchEndHandler) {
+        galleryGrid.removeEventListener('touchstart', touchStartHandler);
+        galleryGrid.removeEventListener('touchend', touchEndHandler);
+    }
     
-    galleryGrid.addEventListener('touchend', (e) => {
+    touchStartHandler = (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    };
+    
+    touchEndHandler = (e) => {
         touchEndX = e.changedTouches[0].screenX;
         handleGallerySwipe();
-    }, { passive: true });
+    };
     
     function handleGallerySwipe() {
         const swipeThreshold = 50;
@@ -172,14 +212,23 @@ function initializeGalleryPagination() {
         }
     }
     
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
+    galleryGrid.addEventListener('touchstart', touchStartHandler, { passive: true });
+    galleryGrid.addEventListener('touchend', touchEndHandler, { passive: true });
+    
+    // Keyboard navigation - remove old handler if exists
+    if (galleryKeyboardHandler) {
+        document.removeEventListener('keydown', galleryKeyboardHandler);
+    }
+    
+    galleryKeyboardHandler = (e) => {
         if (e.key === 'ArrowLeft' && currentGalleryPage > 0) {
             goToGalleryPage(currentGalleryPage - 1);
         } else if (e.key === 'ArrowRight' && currentGalleryPage < totalPages - 1) {
             goToGalleryPage(currentGalleryPage + 1);
         }
-    });
+    };
+    
+    document.addEventListener('keydown', galleryKeyboardHandler);
 }
 
 function showGalleryPage(pageIndex) {
@@ -190,18 +239,41 @@ function showGalleryPage(pageIndex) {
     
     const startIndex = pageIndex * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
+    const direction = pageIndex > currentGalleryPage ? 'next' : 'prev';
     
+    // First, fade out current items with slide animation
     galleryItems.forEach((item, index) => {
-        if (index >= startIndex && index < endIndex) {
-            item.classList.remove('hidden');
-            setTimeout(() => item.classList.add('visible'), 10);
-        } else {
-            item.classList.remove('visible');
-            item.classList.add('hidden');
+        if (!item.classList.contains('hidden')) {
+            item.style.opacity = '0';
+            item.style.transform = direction === 'next' ? 'translateX(-30px)' : 'translateX(30px)';
         }
     });
     
-    // Update pagination dots
+    // After fade out, hide old items and show new ones
+    setTimeout(() => {
+        galleryItems.forEach((item, index) => {
+            if (index >= startIndex && index < endIndex) {
+                item.classList.remove('hidden');
+                // Start with offset position for slide-in effect
+                item.style.transform = direction === 'next' ? 'translateX(30px)' : 'translateX(-30px)';
+                item.style.opacity = '0';
+                
+                // Stagger the animation for each item
+                setTimeout(() => {
+                    item.classList.add('visible');
+                    item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, index % itemsPerPage * 50); // 50ms delay between each item
+            } else {
+                item.classList.remove('visible');
+                item.classList.add('hidden');
+                item.style.opacity = '0';
+            }
+        });
+    }, 300); // Wait for fade out to complete
+    
+    // Update pagination dots with animation
     document.querySelectorAll('.pagination-dot').forEach((dot, index) => {
         dot.classList.toggle('active', index === pageIndex);
     });

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin PWA Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1B4B8F;
+            margin-bottom: 10px;
+        }
+        .status-section {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background: white;
+            border-left: 4px solid #ddd;
+        }
+        .check-item.pass {
+            border-left-color: #4CAF50;
+            background: #f1f8f4;
+        }
+        .check-item.fail {
+            border-left-color: #f44336;
+            background: #fef1f0;
+        }
+        .check-item .icon {
+            font-size: 24px;
+            margin-right: 15px;
+            width: 30px;
+        }
+        .check-item.pass .icon { color: #4CAF50; }
+        .check-item.fail .icon { color: #f44336; }
+        .icon-preview {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .icon-box {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .icon-box img {
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        button {
+            background: #1B4B8F;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #143a6f;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔵 Admin Panel PWA Status</h1>
+        <p>Testing Progressive Web App installation readiness</p>
+
+        <div class="status-section">
+            <h2>📋 PWA Checklist</h2>
+            <div id="checks"></div>
+        </div>
+
+        <div class="status-section">
+            <h2>🎨 Icon Preview</h2>
+            <div class="icon-preview">
+                <div class="icon-box">
+                    <img src="./public/admin-logo-192x192.png" width="96" height="96" alt="192x192">
+                    <p><strong>192×192</strong></p>
+                </div>
+                <div class="icon-box">
+                    <img src="./public/admin-logo-512x512.png" width="96" height="96" alt="512x512">
+                    <p><strong>512×512</strong></p>
+                </div>
+                <div class="icon-box">
+                    <img src="./public/admin-logo-1024x1024.png" width="96" height="96" alt="1024x1024">
+                    <p><strong>1024×1024</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-section">
+            <h2>⚙️ Actions</h2>
+            <button onclick="checkManifest()">📄 Check Manifest</button>
+            <button onclick="checkServiceWorker()">🔧 Check Service Worker</button>
+            <button onclick="clearCache()">🗑️ Clear Cache</button>
+            <button onclick="window.location.href='./index.html'">🚀 Open Admin Panel</button>
+        </div>
+
+        <div class="info">
+            <h3>📱 How to Install on Mobile:</h3>
+            <p><strong>Android (Chrome):</strong> Menu (⋮) → "Install app"</p>
+            <p><strong>iOS (Safari):</strong> Share → "Add to Home Screen"</p>
+            <p><strong>Desktop (Chrome):</strong> Look for install icon in address bar</p>
+        </div>
+
+        <div id="manifestData" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function runChecks() {
+            const checks = [];
+
+            // Check HTTPS or localhost
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
+            checks.push({
+                name: 'Secure Context (HTTPS or localhost)',
+                pass: isSecure,
+                detail: location.protocol
+            });
+
+            // Check manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            checks.push({
+                name: 'Manifest Link Present',
+                pass: !!manifestLink,
+                detail: manifestLink ? manifestLink.href : 'Not found'
+            });
+
+            // Check Service Worker support
+            const swSupported = 'serviceWorker' in navigator;
+            checks.push({
+                name: 'Service Worker Support',
+                pass: swSupported,
+                detail: swSupported ? 'Supported' : 'Not supported'
+            });
+
+            // Check Service Worker registration
+            if (swSupported) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                checks.push({
+                    name: 'Service Worker Registered',
+                    pass: !!registration,
+                    detail: registration ? registration.scope : 'Not registered'
+                });
+            }
+
+            // Check icons
+            const icon192 = new Image();
+            icon192.src = './public/admin-logo-192x192.png';
+            await new Promise(resolve => {
+                icon192.onload = () => resolve(true);
+                icon192.onerror = () => resolve(false);
+            });
+            checks.push({
+                name: 'Icon 192x192 Available',
+                pass: icon192.complete && icon192.naturalHeight > 0,
+                detail: `${icon192.naturalWidth}x${icon192.naturalHeight}`
+            });
+
+            const icon512 = new Image();
+            icon512.src = './public/admin-logo-512x512.png';
+            await new Promise(resolve => {
+                icon512.onload = () => resolve(true);
+                icon512.onerror = () => resolve(false);
+            });
+            checks.push({
+                name: 'Icon 512x512 Available',
+                pass: icon512.complete && icon512.naturalHeight > 0,
+                detail: `${icon512.naturalWidth}x${icon512.naturalHeight}`
+            });
+
+            // Check manifest data
+            try {
+                const manifestUrl = manifestLink ? manifestLink.href : './manifest.json';
+                const response = await fetch(manifestUrl);
+                const manifest = await response.json();
+                checks.push({
+                    name: 'Manifest Valid JSON',
+                    pass: true,
+                    detail: `${manifest.icons.length} icons defined`
+                });
+
+                // Display manifest
+                document.getElementById('manifestData').innerHTML = `
+                    <div class="status-section">
+                        <h3>📄 Manifest Data</h3>
+                        <p><strong>Name:</strong> ${manifest.name}</p>
+                        <p><strong>Short Name:</strong> ${manifest.short_name}</p>
+                        <p><strong>Start URL:</strong> <span class="code">${manifest.start_url}</span></p>
+                        <p><strong>Display:</strong> ${manifest.display}</p>
+                        <p><strong>Theme Color:</strong> <span style="display:inline-block;width:20px;height:20px;background:${manifest.theme_color};border-radius:3px;vertical-align:middle;"></span> ${manifest.theme_color}</p>
+                        <p><strong>Icons:</strong> ${manifest.icons.length} (${manifest.icons.map(i => i.sizes).join(', ')})</p>
+                    </div>
+                `;
+            } catch (e) {
+                checks.push({
+                    name: 'Manifest Valid JSON',
+                    pass: false,
+                    detail: e.message
+                });
+            }
+
+            // Display checks
+            const checksDiv = document.getElementById('checks');
+            checksDiv.innerHTML = checks.map(check => `
+                <div class="check-item ${check.pass ? 'pass' : 'fail'}">
+                    <div class="icon">${check.pass ? '✅' : '❌'}</div>
+                    <div style="flex:1;">
+                        <strong>${check.name}</strong>
+                        <div style="font-size:14px;color:#666;margin-top:4px;">${check.detail}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function checkManifest() {
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            const manifestUrl = manifestLink ? manifestLink.href : './manifest.json';
+            const response = await fetch(manifestUrl);
+            const manifest = await response.json();
+            alert('Manifest loaded successfully!\n\n' + JSON.stringify(manifest, null, 2));
+        }
+
+        async function checkServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                if (registrations.length > 0) {
+                    alert(`Service Worker Status:\n\n${registrations.map((r, i) => 
+                        `Registration ${i + 1}:\nScope: ${r.scope}\nState: ${r.active?.state || 'inactive'}`
+                    ).join('\n\n')}`);
+                } else {
+                    alert('No service workers registered.\n\nPlease visit the admin panel first to register the service worker.');
+                }
+            } else {
+                alert('Service Workers are not supported in this browser.');
+            }
+        }
+
+        async function clearCache() {
+            if (confirm('Clear all caches and unregister service workers?')) {
+                // Clear caches
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                // Unregister service workers
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(r => r.unregister()));
+                
+                alert('✅ Cache cleared and service workers unregistered!\n\nReload the page to re-register.');
+                location.reload();
+            }
+        }
+
+        // Run checks on load
+        window.onload = runChecks;
+    </script>
+</body>
+</html>
