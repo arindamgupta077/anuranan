@@ -3324,7 +3324,7 @@ section {
     }
     
     .logo {
-        gap: 6px;
+        gap: 1px;
     }
     
     .hamburger {
@@ -4322,7 +4322,7 @@ section {
     }
     
     .logo {
-        gap: 4px;
+        gap: 0px;
     }
     
     .hamburger {
