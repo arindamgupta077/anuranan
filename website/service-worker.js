@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anuranan-v4-fullscreen-fix';
+const CACHE_NAME = 'anuranan-v5-202511130001';
 const urlsToCache = [
   '/',
   '/index.html',

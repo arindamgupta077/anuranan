@@ -3319,6 +3319,14 @@ section {
     }
     
     /* Navigation improvements */
+    .nav-wrapper {
+        padding: 2px 0;
+    }
+    
+    .logo {
+        gap: 6px;
+    }
+    
     .hamburger {
         display: flex;
         z-index: 1001;
@@ -4310,7 +4318,11 @@ section {
     
     /* Navigation */
     .nav-wrapper {
-        padding: 12px 0;
+        padding: 1px 0;
+    }
+    
+    .logo {
+        gap: 4px;
     }
     
     .hamburger {
