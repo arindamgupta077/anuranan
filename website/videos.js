@@ -512,6 +512,47 @@ function closeVideoModal(modal) {
 }
 
 // ==================== 
+// Load Courses for Footer
+// ==================== 
+
+async function loadCourses() {
+    try {
+        // Check if Supabase is loaded
+        if (typeof supabaseClient === 'undefined') {
+            console.error('Supabase client not loaded');
+            return;
+        }
+
+        // Fetch courses from Supabase
+        const { data: courses, error } = await supabaseClient
+            .from('courses')
+            .select('*')
+            .eq('is_active', true)
+            .order('display_order', { ascending: true });
+
+        if (error) {
+            console.error('Error loading courses:', error);
+            return;
+        }
+
+        if (courses && courses.length > 0) {
+            renderFooterCourses(courses);
+        }
+    } catch (error) {
+        console.error('Error loading courses:', error);
+    }
+}
+
+function renderFooterCourses(courses) {
+    const footerCoursesList = document.querySelector('.footer-courses-list');
+    if (!footerCoursesList) return;
+
+    footerCoursesList.innerHTML = courses.map(course => `
+        <li><a href="index.html#courses">${course.title}</a></li>
+    `).join('');
+}
+
+// ==================== 
 // Initialize Videos Page
 // ==================== 
 
@@ -521,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof supabaseClient !== 'undefined') {
             clearInterval(checkSupabase);
             loadVideos();
+            loadCourses(); // Load courses for footer
         }
     }, 100);
     
