@@ -337,7 +337,7 @@ async function loadGalleryItems() {
             .from(GALLERY_BUCKET)
             .list('', {
                 limit: 100,
-                sortBy: { column: 'created_at', order: 'desc' }
+                sortBy: { column: 'name', order: 'asc' }
             });
         
         console.log('Gallery response - data:', data, 'error:', error);
@@ -358,6 +358,21 @@ async function loadGalleryItems() {
         
         // Store items
         galleryItems = data.filter(item => !item.name.includes('.emptyFolderPlaceholder'));
+        
+        // Sort items by timestamp embedded in filename (desc - newest first)
+        galleryItems.sort((a, b) => {
+            const getTimestamp = (filename) => {
+                // Extract timestamp from filename format: title___description___timestamp.ext
+                const parts = filename.split('___');
+                if (parts.length >= 3) {
+                    const timestampPart = parts[2].split('.')[0];
+                    const timestamp = parseInt(timestampPart);
+                    return isNaN(timestamp) ? 0 : timestamp;
+                }
+                return 0; // Old format without timestamp - sort to bottom
+            };
+            return getTimestamp(b.name) - getTimestamp(a.name);
+        });
         
         // Check if we have any valid items after filtering
         if (galleryItems.length === 0) {
@@ -547,8 +562,40 @@ document.getElementById('galleryForm').addEventListener('submit', async (e) => {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         
+        let fileToUpload = null;
+        let fileExt = '';
+        let timestamp = Date.now(); // Default timestamp for new items
+        
         if (galleryId) {
-            // Update existing item - delete old file first
+            // Editing existing item - preserve original timestamp
+            const originalTimestamp = document.getElementById('galleryOriginalTimestamp').value;
+            timestamp = originalTimestamp ? parseInt(originalTimestamp) : Date.now();
+            
+            if (fileInput.files[0]) {
+                // New image provided - use it
+                fileToUpload = fileInput.files[0];
+                fileExt = fileToUpload.name.split('.').pop();
+            } else {
+                // No new image - download existing file and re-upload with new metadata
+                console.log('No new image provided, downloading existing file:', galleryId);
+                
+                // Get the file extension from the old filename
+                fileExt = galleryId.split('.').pop();
+                
+                // Download the existing file
+                const { data: downloadData, error: downloadError } = await supabase.storage
+                    .from(GALLERY_BUCKET)
+                    .download(galleryId);
+                
+                if (downloadError) {
+                    throw new Error('Failed to download existing file: ' + downloadError.message);
+                }
+                
+                fileToUpload = downloadData;
+                console.log('Downloaded existing file, size:', fileToUpload.size, 'bytes');
+            }
+            
+            // Delete old file
             console.log('Deleting old file:', galleryId);
             const { error: deleteError } = await supabase.storage
                 .from(GALLERY_BUCKET)
@@ -557,51 +604,54 @@ document.getElementById('galleryForm').addEventListener('submit', async (e) => {
             if (deleteError) {
                 console.error('Error deleting old file:', deleteError);
             }
+        } else {
+            // Adding new item - use current timestamp
+            if (!fileInput.files[0]) {
+                showToast('Please select an image', true);
+                return;
+            }
+            fileToUpload = fileInput.files[0];
+            fileExt = fileToUpload.name.split('.').pop();
         }
         
-        if (fileInput.files[0]) {
-            const file = fileInput.files[0];
-            const fileExt = file.name.split('.').pop();
-            // Add timestamp to make filename unique and avoid cache issues
-            const timestamp = Date.now();
-            const fileName = `${encodeURIComponent(title)}___${encodeURIComponent(description)}___${timestamp}.${fileExt}`;
-            
-            console.log('Uploading new file:', fileName);
-            console.log('File size:', file.size, 'bytes');
-            console.log('File type:', file.type);
-            
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from(GALLERY_BUCKET)
-                .upload(fileName, file, {
-                    cacheControl: '300', // 5 minutes cache for faster updates
-                    upsert: false // Don't upsert to ensure fresh upload
-                });
-            
-            if (uploadError) {
-                console.error('Upload error details:', uploadError);
-                throw uploadError;
-            }
-            
-            console.log('Upload successful:', uploadData);
-            
-            // Verify the upload by listing files
-            const { data: verifyData, error: verifyError } = await supabase.storage
-                .from(GALLERY_BUCKET)
-                .list('', {
-                    limit: 1,
-                    search: fileName
-                });
-            
-            if (verifyError) {
-                console.warn('Could not verify upload:', verifyError);
-                showGalleryStatus('Photo uploaded but verification failed. Please refresh to confirm.', 'info');
-            } else if (verifyData && verifyData.length > 0) {
-                console.log('Upload verified successfully:', verifyData[0]);
-                showGalleryStatus('Photo uploaded and verified successfully! It will appear on the website within 30 seconds.', 'success');
-            } else {
-                console.warn('Upload completed but file not found in verification');
-                showGalleryStatus('Photo uploaded but not found in verification. Please refresh to check.', 'info');
-            }
+        // Upload the file with preserved or new timestamp
+        const fileName = `${encodeURIComponent(title)}___${encodeURIComponent(description)}___${timestamp}.${fileExt}`;
+        
+        console.log('Uploading file:', fileName);
+        console.log('File size:', fileToUpload.size, 'bytes');
+        console.log('File type:', fileToUpload.type || 'blob');
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from(GALLERY_BUCKET)
+            .upload(fileName, fileToUpload, {
+                cacheControl: '300', // 5 minutes cache for faster updates
+                upsert: false // Don't upsert to ensure fresh upload
+            });
+        
+        if (uploadError) {
+            console.error('Upload error details:', uploadError);
+            throw uploadError;
+        }
+        
+        console.log('Upload successful:', uploadData);
+        
+        // Verify the upload by listing files
+        const { data: verifyData, error: verifyError } = await supabase.storage
+            .from(GALLERY_BUCKET)
+            .list('', {
+                limit: 1,
+                search: fileName
+            });
+        
+        if (verifyError) {
+            console.warn('Could not verify upload:', verifyError);
+            showGalleryStatus('Photo uploaded but verification failed. Please refresh to confirm.', 'info');
+        } else if (verifyData && verifyData.length > 0) {
+            console.log('Upload verified successfully:', verifyData[0]);
+            showGalleryStatus('Photo uploaded and verified successfully! It will appear on the website within 30 seconds.', 'success');
+        } else {
+            console.warn('Upload completed but file not found in verification');
+            showGalleryStatus('Photo uploaded but not found in verification. Please refresh to check.', 'info');
         }
         
         showToast(galleryId ? 'Photo updated successfully!' : 'Photo added successfully!');
@@ -629,6 +679,19 @@ async function editGalleryItem(fileName) {
     const descPart = fileNameParts[1] || '';
     const description = descPart.split('.')[0].replace(/___\d+$/, ''); // Remove timestamp if present
     const cleanDescription = decodeURIComponent(description);
+    
+    // Extract original timestamp if it exists
+    let originalTimestamp = Date.now(); // Default to current time for old format
+    if (fileNameParts.length >= 3) {
+        const timestampPart = fileNameParts[2].split('.')[0];
+        const parsed = parseInt(timestampPart);
+        if (!isNaN(parsed)) {
+            originalTimestamp = parsed;
+        }
+    }
+    
+    // Store original timestamp in a hidden field
+    document.getElementById('galleryOriginalTimestamp').value = originalTimestamp;
     
     document.getElementById('galleryModalTitle').textContent = 'Edit Gallery Photo';
     document.getElementById('galleryTitle').value = title;
