@@ -21,7 +21,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Admin Panel - Anuranan</title>
-    <link rel="stylesheet" href="admin.css?v=202511102300">
+    <link rel="stylesheet" href="admin.css?v=202601101530">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -922,13 +922,13 @@
         <span id="toastMessage">Action completed successfully!</span>
     </div>
 
-    <script src="admin.js?v=202511102038"></script>
+    <script src="admin.js?v=20260110155500"></script>
     
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/admin/service-worker.js', { scope: '/admin/' })
+                navigator.serviceWorker.register('./service-worker.js', { scope: './' })
                     .then((registration) => {
                         console.log('Admin Service Worker registered successfully:', registration.scope);
                         
