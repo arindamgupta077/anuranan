@@ -675,11 +675,15 @@ button {
 }
 
 .hero-description {
-    font-size: 18px;
-    line-height: 1.8;
+    font-size: 24px;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.6;
     margin-bottom: 40px;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    color: #FFF8E7; /* Pale Yellow / Cream */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    font-style: italic;
+    letter-spacing: 0.5px;
 }
 
 .hero-buttons {
@@ -1253,6 +1257,31 @@ section {
 .value-item p {
     font-size: 14px;
     color: var(--text-light);
+}
+
+.seo-heading {
+    font-size: 22px; 
+    color: var(--text-dark); 
+    font-weight: 700; 
+    margin: 30px 0 15px 0;
+    font-family: var(--font-primary);
+    position: relative;
+    display: padding-block;
+    line-height: 1.4;
+}
+
+.seo-heading .highlight-text {
+    color: var(--primary-blue);
+}
+
+.seo-heading::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-yellow);
+    border-radius: 2px;
+    margin-top: 8px;
 }
 
 /* ==================== 
