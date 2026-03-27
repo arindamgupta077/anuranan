@@ -178,6 +178,7 @@
             </div>
             <form id="eventForm" class="modal-form">
                 <input type="hidden" id="eventId">
+                <input type="hidden" id="existingPhotoPath">
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -239,6 +240,19 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="eventImage">Event Image <small style="font-weight:400; color:#888;">(optional)</small></label>
+                    <div class="file-upload-area">
+                        <input type="file" id="eventImage" accept="image/*">
+                        <div class="file-upload-text">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload event photo / poster</p>
+                            <small>PNG, JPG, JPEG (Max 5MB)</small>
+                        </div>
+                    </div>
+                    <div id="eventImagePreview" class="image-preview"></div>
+                </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" data-modal="eventModal">Cancel</button>
                     <button type="submit" class="btn-save">
@@ -246,10 +260,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content modal-small">
             <div class="modal-header">
