@@ -1,0 +1,66 @@
+services:
+  # ── Main Website ────────────────────────────────────────────────────────────
+  - type: web
+    name: anuranan-website
+    env: static
+    rootDir: website
+    buildCommand: ""
+    staticPublishPath: .
+    branch: main
+    headers:
+      # HTML files — never cached. Browser always asks Render "is this still fresh?"
+      # This ensures users pick up the new index.html (with updated ?v= strings)
+      # on their very next visit after a deploy — no manual cache clearing needed.
+      - path: /
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      - path: /videos.html
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      # Service worker must always be revalidated so the browser picks up the
+      # new CACHE_NAME and triggers a SW update cycle immediately.
+      - path: /service-worker.js
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      # Versioned JS/CSS — safe to cache long-term because ?v= changes on deploy.
+      - path: /styles.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /script.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /supabase-loader.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      # Static public assets (images, icons) — cached for 1 day
+      - path: /public/*
+        name: Cache-Control
+        value: public, max-age=86400
+
+  # ── Admin Panel ─────────────────────────────────────────────────────────────
+  - type: web
+    name: anuranan-admin
+    env: static
+    rootDir: admin
+    buildCommand: ""
+    staticPublishPath: .
+    branch: main
+    headers:
+      - path: /
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      - path: /courses.html
+        name: Cache-Control
+        value: no-cache, must-revalidate
+      - path: /admin.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /admin.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

@@ -12,6 +12,7 @@ $updates = @(
     @{File="website\index.html"; Old='styles.css?v=1.0'; New="styles.css?v=$timestamp"},
     @{File="website\index.html"; Old='script.js?v=1.0'; New="script.js?v=$timestamp"},
     @{File="website\index.html"; Old='supabase-loader.js?v=1.0'; New="supabase-loader.js?v=$timestamp"},
+    @{File="website\index.html"; Old='service-worker.js?v=1.0'; New="service-worker.js?v=$timestamp"},
     @{File="admin\index.html"; Old='admin.css?v=1.0'; New="admin.css?v=$timestamp"},
     @{File="admin\index.html"; Old='admin.js?v=1.0'; New="admin.js?v=$timestamp"},
     @{File="admin\courses.html"; Old='admin.css?v=1.0'; New="admin.css?v=$timestamp"},
@@ -31,6 +32,20 @@ foreach ($update in $updates) {
         $content = $content -replace $oldPattern, $update.New
         Set-Content $file -Value $content -NoNewline
     }
+}
+
+# Also update the service worker CACHE_NAME and its precache version strings
+$swFile = "website\service-worker.js"
+if (Test-Path $swFile) {
+    $swContent = Get-Content $swFile -Raw
+    # Bump the CACHE_NAME version so the browser installs a fresh SW on next visit
+    $swContent = $swContent -replace "const CACHE_NAME = 'anuranan-v\d+-[^']*'", "const CACHE_NAME = 'anuranan-v6-$timestamp'"
+    # Update the precache ?v= strings to match the new HTML asset versions
+    $swContent = $swContent -replace "styles\.css\?v=[^']*'", "styles.css?v=$timestamp'"
+    $swContent = $swContent -replace "script\.js\?v=[^']*'", "script.js?v=$timestamp'"
+    $swContent = $swContent -replace "supabase-loader\.js\?v=[^']*'", "supabase-loader.js?v=$timestamp'"
+    Set-Content $swFile -Value $swContent -NoNewline
+    Write-Host "   Service Worker cache name and precache URLs updated" -ForegroundColor Green
 }
 
 Write-Host "   Cache version updated to: v=$timestamp" -ForegroundColor Green
