@@ -1063,7 +1063,7 @@
     <!-- Floating WhatsApp Button (icon-only) -->
     <a id="whatsappBtn"
        class="whatsapp-float"
-       href="#"
+       href="https://web.whatsapp.com/send?phone=918910621825"
        target="_blank"
        rel="noopener noreferrer"
        aria-label="Chat on WhatsApp with Anuranan"
@@ -1129,7 +1129,7 @@
             });
         }
     </script>
-    <!-- WhatsApp button behavior: open mobile wa.me on phones, web on desktop; include a prefilled message -->
+    <!-- WhatsApp button behavior: use web.whatsapp.com on desktop, wa.me on mobile; include a prefilled message -->
     <script>
         (function(){
             const phone = '918910621825';
@@ -1137,16 +1137,53 @@
             if (!waBtn) return;
             const message = "Hello! I'm interested in ANURANAN courses. Could you please share details?";
             const encoded = encodeURIComponent(message);
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobile) {
-                waBtn.href = 'https://wa.me/' + phone + '?text=' + encoded;
-            } else {
-                waBtn.href = 'https://web.whatsapp.com/send?phone=' + phone + '&text=' + encoded;
-                waBtn.target = '_blank';
+
+            function detectMobile() {
+                try {
+                    if (navigator.userAgentData && typeof navigator.userAgentData.mobile === 'boolean') {
+                        return navigator.userAgentData.mobile;
+                    }
+                } catch (e) {}
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             }
+
+            const isMobile = detectMobile();
+            const mobileUrl = 'https://wa.me/' + phone + '?text=' + encoded;
+            const webUrl = 'https://web.whatsapp.com/send?phone=' + phone + '&text=' + encoded;
+
+            // Set href so middle-click / long-press works
+            waBtn.href = isMobile ? mobileUrl : webUrl;
+
+            // Attributes for safety
+            if (isMobile) {
+                waBtn.removeAttribute('target');
+                waBtn.setAttribute('rel', 'noopener');
+            } else {
+                waBtn.setAttribute('target', '_blank');
+                waBtn.setAttribute('rel', 'noopener noreferrer');
+            }
+
             waBtn.setAttribute('aria-label', 'Chat on WhatsApp with Anuranan');
             waBtn.setAttribute('title', 'Chat on WhatsApp with Anuranan');
-            waBtn.setAttribute('rel', 'noopener noreferrer');
+
+            // Attach click handler to robustly open WhatsApp Web on desktop
+            waBtn.addEventListener('click', function(e){
+                // Let mobile/default behavior proceed
+                if (isMobile) return true;
+                e.preventDefault();
+                try {
+                    const newWin = window.open(webUrl, '_blank');
+                    if (newWin) {
+                        try { newWin.opener = null; } catch (err) {}
+                    } else {
+                        // Fallback: navigate current window
+                        window.location.href = webUrl;
+                    }
+                } catch (err) {
+                    window.location.href = webUrl;
+                }
+                return false;
+            });
         })();
     </script>
 </body>

@@ -5742,7 +5742,7 @@ section {
 
 .whatsapp-float {
     position: fixed;
-    bottom: calc(40px + env(safe-area-inset-bottom));
+    bottom: calc(30px + env(safe-area-inset-bottom));
     right: calc(20px + env(safe-area-inset-right));
     background: linear-gradient(135deg, #25D366, #128C7E);
     color: white;
