@@ -1060,6 +1060,18 @@
         <span class="review-text">Review Us</span>
     </a>
 
+    <!-- Floating WhatsApp Button (icon-only) -->
+    <a id="whatsappBtn"
+       class="whatsapp-float"
+       href="#"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Chat on WhatsApp with Anuranan"
+       title="Chat on WhatsApp with Anuranan">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+        <span class="sr-only">Chat on WhatsApp with Anuranan</span>
+    </a>
+
     <!-- Contact Form Modal -->
     <div id="contactModal" class="contact-modal">
         <div class="modal-content">
@@ -1116,6 +1128,26 @@
                     });
             });
         }
+    </script>
+    <!-- WhatsApp button behavior: open mobile wa.me on phones, web on desktop; include a prefilled message -->
+    <script>
+        (function(){
+            const phone = '918910621825';
+            const waBtn = document.getElementById('whatsappBtn');
+            if (!waBtn) return;
+            const message = "Hello! I'm interested in ANURANAN courses. Could you please share details?";
+            const encoded = encodeURIComponent(message);
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                waBtn.href = 'https://wa.me/' + phone + '?text=' + encoded;
+            } else {
+                waBtn.href = 'https://web.whatsapp.com/send?phone=' + phone + '&text=' + encoded;
+                waBtn.target = '_blank';
+            }
+            waBtn.setAttribute('aria-label', 'Chat on WhatsApp with Anuranan');
+            waBtn.setAttribute('title', 'Chat on WhatsApp with Anuranan');
+            waBtn.setAttribute('rel', 'noopener noreferrer');
+        })();
     </script>
 </body>
 </html>
